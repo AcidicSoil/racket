@@ -2,62 +2,59 @@
 (require 2htdp/universe)
 (require 2htdp/image)
 
-(define (CAR-CALC-TOP z)
-  (/ CAR-LENGTH 2))
-
-(define (CAR-CALC-X C)
-  (* CAR-LENGTH CALC-WHEEL-RADIUS))
-
-(define (CAR-CALC-Y CAR-WHEEL-RADIUS)
-  (* CAR-WIDTH CALC-WHEEL-RADIUS))
-
-(define CAR-BODY
-  (overlay/align "center" "bottom"
-                 (rectangle (CAR-CALC-X CAR-LENGTH) (CAR-CALC-Y CAR-WIDTH) "solid" "red")
-                 (square (CAR-CALC-TOP z) "solid" "red")))
-
-(define CALC-WHEEL-RADIUS (/ (image-width CAR-BODY) 4))
-
-(define WHEEL-RADIUS (CALC-WHEEL-RADIUS))
-
-(define WIDTH-OF-WORLD (/ (* 200 WHEEL-RADIUS) 2))
-(define HEIGHT-OF-WORLD (/ (* 30 WHEEL-RADIUS) 2))
+(define WHEEL-RADIUS 15)
+(define WIDTH-OF-WORLD  250)
+(define HEIGHT-OF-WORLD 250)
 (define AREA-OF-WORLD (* WIDTH-OF-WORLD HEIGHT-OF-WORLD))
-(define CAR-LENGTH (/ WIDTH-OF-WORLD (* 7 WHEEL-RADIUS)))
-(define CAR-WIDTH (/  CAR-LENGTH (* 2 WHEEL-RADIUS)))
-(define CAR-TOP (/ (+ CAR-WIDTH CAR-LENGTH) 2))
-;(define CAR-WHEEL-SPACE 
-(define tree
-  (underlay/xy (circle 10 "solid" "green")
-               9 15
-               (rectangle 2 20 "solid" "brown")))
-(define TREE-CENTER-TO-TOP
-  (- HEIGHT-OF-WORLD (/ (image-height tree) 2)))
 
-(define BACKGROUND (place-image tree
-                                100 TREE-CENTER-TO-TOP
-                                (empty-scene WIDTH-OF-WORLD HEIGHT-OF-WORLD)))
+(define D (* WHEEL-RADIUS 2))
+(define ca (* (sqr WHEEL-RADIUS) pi))
 ;WHEEL DEFINITIONS
-;(define WHEEL-RADIUS 5)
 (define WHEEL-DISTANCE (* WHEEL-RADIUS 5))
 (define WHEEL
   (circle WHEEL-RADIUS "solid" "black"))
+(define CAR-LENGTH (* D 5))
+(define wsv1 (/ CAR-LENGTH 3))
 (define SPACE
-  (rectangle WHEEL-RADIUS WHEEL-RADIUS "solid" "white"))
+  (rectangle wsv1 0 "outline" "blue"))
+
 (define BOTH-WHEELS
   (beside WHEEL SPACE WHEEL))
-;Create an arbitrary value for car based on wheel-radius. (ratio of wheel-radius and scene l & w)
-;CAR DEFINITIONS
 
-(define CAR
-  (above CAR-BODY  BOTH-WHEELS))
+;CAR DEFINITIONS
+(define CAR-HEIGHT (* .6(* 2.25 D)))
+(define CAR-TOP-H (/ CAR-HEIGHT 3))
+(define CAR-TOP-L (* CAR-LENGTH .7))
+(define CAR-BODY
+  (above/align "middle"
+               (rectangle CAR-TOP-L CAR-TOP-H "solid" "blue")
+               (rectangle CAR-LENGTH CAR-HEIGHT "solid" "blue")))
+
+(define CAR (underlay/align/offset
+             "middle" "bottom"
+             CAR-BODY
+             0 10
+             BOTH-WHEELS))
+
 (define CAR-CENTER-TO-TOP
   (- HEIGHT-OF-WORLD (/ (image-height CAR) 2)))
 (define CAR-CENTER-TO-WIDTH
   (/ (image-width CAR) 2))
 (define Y-CAR CAR-CENTER-TO-TOP)
 
+(define tree-top (* (image-height CAR) 1.5))
+(define trunk-h (* .9 tree-top))
+(define trunk-l (* .3 trunk-h))
+(define tree
+  (above/align "middle"
+               (circle tree-top "solid" "green")
+               (rectangle trunk-l trunk-h "solid" "brown")))
+(define TREE-CENTER-TO-TOP
+  (- HEIGHT-OF-WORLD (/ (image-height tree) 2)))
 
+(define BACKGROUND (place-image tree
+                                100 TREE-CENTER-TO-TOP
+                                (empty-scene WIDTH-OF-WORLD HEIGHT-OF-WORLD)))
 (check-expect (render 50)
               (place-image CAR 50 Y-CAR BACKGROUND))
 (check-expect (render 200)
@@ -117,6 +114,6 @@
     [stop-when stop]))
 
 (define (stop cls)
-    (cond
-      [(<= (tock cls) (+ (image-width cw) CAR-CENTER-TO-WIDTH)) #false]
-      [(>= (tock cls) (+ (image-width cw) CAR-CENTER-TO-WIDTH)) #true]))
+  (cond
+    [(<= (tock cls) (+ (image-width cw) CAR-CENTER-TO-WIDTH)) #false]
+    [(>= (tock cls) (+ (image-width cw) CAR-CENTER-TO-WIDTH)) #true]))
