@@ -1,0 +1,122 @@
+(require 2htdp/batch-io)
+(require 2htdp/universe)
+(require 2htdp/image)
+
+(define (CAR-CALC-TOP z)
+  (/ CAR-LENGTH 2))
+
+(define (CAR-CALC-X C)
+  (* CAR-LENGTH CALC-WHEEL-RADIUS))
+
+(define (CAR-CALC-Y CAR-WHEEL-RADIUS)
+  (* CAR-WIDTH CALC-WHEEL-RADIUS))
+
+(define CAR-BODY
+  (overlay/align "center" "bottom"
+                 (rectangle (CAR-CALC-X CAR-LENGTH) (CAR-CALC-Y CAR-WIDTH) "solid" "red")
+                 (square (CAR-CALC-TOP z) "solid" "red")))
+
+(define CALC-WHEEL-RADIUS (/ (image-width CAR-BODY) 4))
+
+(define WHEEL-RADIUS (CALC-WHEEL-RADIUS))
+
+(define WIDTH-OF-WORLD (/ (* 200 WHEEL-RADIUS) 2))
+(define HEIGHT-OF-WORLD (/ (* 30 WHEEL-RADIUS) 2))
+(define AREA-OF-WORLD (* WIDTH-OF-WORLD HEIGHT-OF-WORLD))
+(define CAR-LENGTH (/ WIDTH-OF-WORLD (* 7 WHEEL-RADIUS)))
+(define CAR-WIDTH (/  CAR-LENGTH (* 2 WHEEL-RADIUS)))
+(define CAR-TOP (/ (+ CAR-WIDTH CAR-LENGTH) 2))
+;(define CAR-WHEEL-SPACE 
+(define tree
+  (underlay/xy (circle 10 "solid" "green")
+               9 15
+               (rectangle 2 20 "solid" "brown")))
+(define TREE-CENTER-TO-TOP
+  (- HEIGHT-OF-WORLD (/ (image-height tree) 2)))
+
+(define BACKGROUND (place-image tree
+                                100 TREE-CENTER-TO-TOP
+                                (empty-scene WIDTH-OF-WORLD HEIGHT-OF-WORLD)))
+;WHEEL DEFINITIONS
+;(define WHEEL-RADIUS 5)
+(define WHEEL-DISTANCE (* WHEEL-RADIUS 5))
+(define WHEEL
+  (circle WHEEL-RADIUS "solid" "black"))
+(define SPACE
+  (rectangle WHEEL-RADIUS WHEEL-RADIUS "solid" "white"))
+(define BOTH-WHEELS
+  (beside WHEEL SPACE WHEEL))
+;Create an arbitrary value for car based on wheel-radius. (ratio of wheel-radius and scene l & w)
+;CAR DEFINITIONS
+
+(define CAR
+  (above CAR-BODY  BOTH-WHEELS))
+(define CAR-CENTER-TO-TOP
+  (- HEIGHT-OF-WORLD (/ (image-height CAR) 2)))
+(define CAR-CENTER-TO-WIDTH
+  (/ (image-width CAR) 2))
+(define Y-CAR CAR-CENTER-TO-TOP)
+
+
+(check-expect (render 50)
+              (place-image CAR 50 Y-CAR BACKGROUND))
+(check-expect (render 200)
+              (place-image CAR 200 Y-CAR BACKGROUND))
+
+; A WorldState is a Number.
+; interpretation the number of pixels between
+; the left border of the scene and the car
+; WorldState -> Image
+; places the image of the car x pixels from 
+; the left margin of the BACKGROUND image 
+;(define (render x)
+;  BACKGROUND) 
+; WorldState -> WorldState
+; adds 3 to x to move the car right 
+;(define (tock x)
+;  x)
+;examples for a rendering function
+;cw -> its image
+;.
+;.
+;.
+;.
+;cw -> an expression
+;50 (place-image CAR 50 Y-CAR BACKGROUND)
+;100 (place-image CAR 100 Y-CAR BACKGROUND)
+;150 (place-image CAR 150 Y-CAR BACKGROUND)
+;200 (place-image CAR 200 Y-CAR BACKGROUND)
+; WorldState -> WorldState
+; launches the program from some initial state
+(define cw  (place-image CAR CAR-CENTER-TO-WIDTH Y-CAR BACKGROUND))
+; WorldState -> WorldState 
+; moves the car by 3 pixels for every clock tick
+; examples: 
+;   given: 20, expect 23
+;   given: 78, expect 81
+(define (tock cw)
+  (+ cw 3))
+; WorldState -> Image
+; places the car into the BACKGROUND scene,
+; according to the given world state 
+(define (render cw)
+  (place-image CAR cw Y-CAR BACKGROUND))
+;computes images
+(define (cls cw)
+  (cond
+    [ (<=  cw CAR-CENTER-TO-WIDTH)
+      (place-image CAR (tock cw) Y-CAR BACKGROUND)]
+    [(>  (tock cw)  cw)
+     (place-image CAR (+ (tock cw) CAR-CENTER-TO-WIDTH) Y-CAR BACKGROUND)]))
+
+
+(define (main ws)
+  (big-bang ws
+    [on-tick tock] 
+    [to-draw cls]
+    [stop-when stop]))
+
+(define (stop cls)
+    (cond
+      [(<= (tock cls) (+ (image-width cw) CAR-CENTER-TO-WIDTH)) #false]
+      [(>= (tock cls) (+ (image-width cw) CAR-CENTER-TO-WIDTH)) #true]))
