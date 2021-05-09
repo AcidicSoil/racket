@@ -1,6 +1,10 @@
 (require 2htdp/batch-io)
 (require 2htdp/universe)
 (require 2htdp/image)
+
+(require 2htdp/batch-io)
+(require 2htdp/universe)
+(require 2htdp/image)
 (define WHEEL-RADIUS 5)
 
 
@@ -108,14 +112,14 @@
 (define (render cw)
   (place-image CAR cw Y-CAR BACKGROUND))
 ;computes images
+(define (f cw) (+ 100(* 20(sin(*(*(* 0.4 .1)pi) cw)))))
 (define (cls cw)
   (cond
     [ (<=  (tock (image-width CAR)) (+ (image-width BACKGROUND)CAR-CENTER-TO-WIDTH))
-      (place-image CAR (tock cw) (tock(- (+ (sin Y-CAR) CAR-CENTER-TO-TOP) (image-height CAR))) BACKGROUND)]
+      (place-image CAR (tock cw) (f (tock cw)) BACKGROUND)]
     [(>  (tock cw)  cw)
      (place-image CAR (+ (tock cw) CAR-R-S) Y-CAR BACKGROUND)]))
 
-;PI divided by number? idea to write code for sin car driving
 (define (main ws)
   (big-bang ws
     [on-tick tock] 
