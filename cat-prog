@@ -1,0 +1,92 @@
+(require 2htdp/batch-io)
+(require 2htdp/universe)
+(require 2htdp/image)
+
+(define cat1 . )
+
+(define WIDTH-OF-WORLD  (*(image-width cat1)3))
+(define HEIGHT-OF-WORLD (*(image-height cat1)4))
+(define AREA-OF-WORLD (* WIDTH-OF-WORLD HEIGHT-OF-WORLD))
+
+(define cat1-CENTER-TO-TOP
+  (- HEIGHT-OF-WORLD (/ (image-height cat1) 2)))
+
+(define Y-cat1 cat1-CENTER-TO-TOP)
+
+(define cat1-CENTER-TO-WIDTH
+  (/ (image-width cat1) 2))
+
+(define cat1-R-S
+  (- (image-width cat1) cat1-CENTER-TO-WIDTH))
+
+(define BACKGROUND (empty-scene WIDTH-OF-WORLD HEIGHT-OF-WORLD))
+(define start-pos  (place-image cat1 cat1-R-S Y-cat1 BACKGROUND))
+(define (tock start-pos)
+  (+ start-pos 3))
+
+(define (render start-pos)
+  (place-image cat1 (tock start-pos) Y-cat1 BACKGROUND))
+
+(define scene-cat-width (+ (image-width BACKGROUND)cat1-CENTER-TO-WIDTH))
+
+(define mod-cat (tock(modulo(+ scene-cat-width 1.5)2)))
+
+(define start-2
+    (place-image cat1 (tock mod-cat) Y-cat1 BACKGROUND))
+(define (stop cat-prog)
+  (cond
+    [(<= (tock cat-prog) (+ (image-width start-pos) cat1-CENTER-TO-WIDTH)) #false]
+    [(>= (tock cat-prog) (+ (image-width start-pos) cat1-CENTER-TO-WIDTH)) #true]))
+
+(define (if-stop-true stop)
+  (cat-loop (tock start-pos)))
+
+(define (is-between-scene-width? n)
+  (and (< (tock start-pos) n) (< n WIDTH-OF-WORLD))) 
+(define (cat-loop n)
+  (cond
+    [(= n (+ WIDTH-OF-WORLD cat1-CENTER-TO-WIDTH))
+     (place-image cat1 (tock start-pos) Y-cat1 BACKGROUND)]))
+;to do list
+;need a zero from modulo in mod-cat line 30
+
+
+(define (cat-prog start-pos)
+  (cond
+      [ (for (<  ((tock (image-width cat1)) (+ (image-width BACKGROUND)cat1-CENTER-TO-WIDTH)))) 
+      (place-image cat1 (tock start-pos) Y-cat1 BACKGROUND)]
+    [(>  (tock start-pos)   (+ (image-width BACKGROUND)cat1-CENTER-TO-WIDTH))
+     (place-image cat1 (+ (tock start-pos) cat1-R-S) Y-cat1 BACKGROUND)]))
+
+
+  ;(or (< (tock (image-width BACKGROUND))) (render start-2) (render start-pos)))
+
+
+;(+ (image-width BACKGROUND)cat1-CENTER-TO-WIDTH) (render start-pos)
+
+  
+#|[ (if(<=  (tock (image-width cat1)) (+ (image-width BACKGROUND)cat1-CENTER-TO-WIDTH))
+      (place-image cat1 (- (tock start-pos)(image-width cat1)) Y-cat1 BACKGROUND))
+ (if(>=(tock (image-width cat1)) (+ (image-width BACKGROUND)cat1-CENTER-TO-WIDTH)))
+    (place-image cat1 (tock start-pos)  start-pos)]))|#
+
+
+
+(image-width BACKGROUND)
+(image-width cat1)
+cat1-CENTER-TO-WIDTH
+scene-cat-width
+mod-cat
+   ; [(zero=? (tock mod-cat))]
+    ;[else(place-image cat1 (-(tock start-pos)cat1) Y-cat1 BACKGROUND)]))
+
+(define (main ws)
+  (big-bang ws
+    [on-tick tock]
+    [to-draw cat-prog]))
+
+#|(define (hyper x-position-of-cat1 x-mouse y-mouse me)
+  (cond
+    [(string=? "button-down" me) x-mouse]
+    [else x-position-of-cat1]))|#
+
