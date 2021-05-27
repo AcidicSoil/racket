@@ -392,32 +392,32 @@
 (check-expect (red-function 10 20 30 40 50) 0)
 (check-expect (red-function 1000 100 250 125 0) 0)
 (define (red-function x y red green blue)
-; x a number
-; y a number
-; red a number
-; green a number
-; blue a number
-0)
+  ; x a number
+  ; y a number
+  ; red a number
+  ; green a number
+  ; blue a number
+  0)
 
 (check-expect (green-function 10 20 30 40 50) 40)
 (check-expect (green-function 1000 100 250 125 0) 125)
 (define (green-function x y red green blue)
-; x a number
-; y a number
-; red a number
-; green a number
-; blue a number
-green)
+  ; x a number
+  ; y a number
+  ; red a number
+  ; green a number
+  ; blue a number
+  green)
 
 (check-expect (blue-function 10 20 30 40 50) 50)
 (check-expect (green-function 1000 100 250 125 0) 125)
 (define (blue-function x y red green blue)
-; x a number
-; y a number
-; red a number
-; green a number
-; blue a number
-blue)
+  ; x a number
+  ; y a number
+  ; red a number
+  ; green a number
+  ; blue a number
+  blue)
 
 
 (map3-image red-function green-function blue-function .)
@@ -427,12 +427,12 @@ blue)
 (check-expect (remove-red-pixels 10 20 30 40 50) 0)
 (check-expect (remove-red-pixels 1000 100 250 125 0) 0)
 (define (remove-red-pixels x y red green blue)
-; x a number
-; y a number
-; red a number
-; green a number
-; blue a number
-0)
+  ; x a number
+  ; y a number
+  ; red a number
+  ; green a number
+  ; blue a number
+  0)
 
 
 (define (remove-red image)
@@ -464,5 +464,19 @@ blue)
 (convert-to-gray .)
 
 
-(define (apply-blue-gradient-pixels x y red green blue)
-  ...)
+(define (blue-gradient-pixels x y red green blue)
+  ; x a number
+  ; y a number
+  (min 255 (real->int   (abs(+ (- y 255 (* y 2.55) ) 255)))))
+
+(define (255-red-pixels x y red green blue)
+  red)
+
+(define (255-green-pixels x y red green blue)
+  green)
+
+(define (apply-blue-gradient image)
+  (map3-image 255-red-pixels 255-green-pixels blue-gradient-pixels image))
+
+(apply-blue-gradient .)
+
