@@ -319,6 +319,15 @@
 
 (build3-image 50 50 5x always-zero  always-zero)
 
+; build-image function exercises
+
+(define (green-exp y)
+  (min 255(* 5 y)))
+
+(define (help-function x y)
+  (make-color (min 255(5x x y)) 0 0))
+(build-image 100 100 help-function)
+
 #|(check-expect (red-function 50 53) 250)
 (check-expect (red-function 50 17) 250)
 (check-expect (red-function 20 40) 100)|#
@@ -370,6 +379,12 @@
 
 (build3-image 100 100   r-g  g-r  always-zero)
 
+; build-image version exercise
+
+(define (some-function x y)
+  (make-color (r-g x y) (g-r x y) 0))
+(build-image 100 100 some-function)
+
 ;black top left corner to yellow bottom  right corner
 ; safe-2.55y : number(y) number(y) -> number
 
@@ -385,9 +400,15 @@
 ; safe-2.55y : number(y) number(y) -> number
 
 (define (b-y x y)
-  (min 255 (real->int    (abs (- (* x 2.55) (* y 2.55))))))
+  (min 255 (real->int (abs (- (* x 2.55) (* y 2.55))))))
 
 (build3-image 100 100  b-y b-y always-zero)
+
+; build-image version exercise
+
+(define (another-function x y)
+  (make-color (b-y x y) (b-y x y) 0))
+(build-image 100 100 another-function)
 
 (check-expect (red-function 10 20 30 40 50) 0)
 (check-expect (red-function 1000 100 250 125 0) 0)
@@ -480,3 +501,37 @@
 
 (apply-blue-gradient .)
 
+; bitmapize : image -> image
+
+(define (red-colors x y red green blue)
+  red)
+
+(define (green-colors x y red green blue)
+  green)
+
+(define (blue-colors x y red green blue)
+  blue)
+
+(define (bitmapize image)
+  (map3-image red-colors green-colors blue-colors image))
+
+(bitmapize (scale 5 (triangle (+ (random 10) 1) "solid" "blue")))
+(scale 5 (bitmapize (triangle 10 "solid" "blue")))
+
+(random 10)
+; check-expect test version for random numbers
+(check-member-of (random 6) 0 1 2 3 4 5)
+; For larger numbers
+(check-range (random 1000) 0 999)
+
+(define (random-digit num)
+  (random 10))
+
+(define (roll-die num)
+  (random 7))
+
+(define (two-dice num)
+  (random 13))
+
+(define (random-picture width height)
+  (rectangle width height "solid" (make-color (random 256) (random 256) (random 256)))) 
