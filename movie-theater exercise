@@ -248,15 +248,15 @@
   (rectangle 200 200 "solid" "white"))
  
 (define (next-dot x)
-  (overlay/xy x
-              (random 200) (random 200)
-              (old-dot DOT)))
- 
+  (overlay/xy  x
+               (min 200 (random 200)) (min 200 (random 200))
+               (old-dot DOT)))
+
 (define (old-dot x)
   (overlay/xy x
-              (random 200) (random 200)
+              (min 200 (random 200)) (min 200 (random 200))
               blank-screen))
 
 (big-bang DOT
   (on-tick next-dot 1/2)
-  (on-draw old-dot))
+  (on-draw old-dot 200 200))
