@@ -1,284 +1,274 @@
 (require picturing-programs)
 
-#|; blue-circle-of-size : number(radius) -> image
-(check-expect (blue-circle-of-size 2)
-              (place-image/align (circle 2 "solid" "blue")
-                                 100 100 "center" "center"
-                                 (rectangle 200 200 "solid" "white")))
-(check-expect (blue-circle-of-size 37)
-              (place-image/align (circle 37 "solid" "blue")
-                                 100 100 "center" "center"
-                                 (rectangle 200 200 "solid" "white")))
+#|(define (mirror-image picture)
+  (beside picture (flip-horizontal picture)))
 
-(define (blue-circle-of-size radius)
-  ; radius number
-  ; "blue" a string I know I’ll need
-  (place-image/align (circle radius "solid" "blue")
-                     100 100 "center" "center"
-                     (rectangle 200 200 "solid" "white")))
+(define (vert-mirror-image picture)
+  (above picture
+         (flip-vertical  picture)))
 
-(big-bang 7
-(check-with number?)
-(on-draw blue-circle-of-size 100 50))
+; big-bang : image(start) event-handler ... -> image
 
-; x-coordinate : image -> number
-(define (x-coordinate x)
-  (place-image
-   (circle 20 "solid" "darkorange")
-   x 50
-   (rectangle 200 200 "solid" "white")))
+(big-bang (overlay
+           (circle 20 "solid" "green")
+           (square 100 "solid" "white")) (on-draw show-it))
 
-(big-bang 5
-  (check-with number?)
-  (on-draw x-coordinate)
-  (on-tick add1 1/10))
+(big-bang (overlay/align
+           "center" "center"
+           pic:calendar (rectangle 100 100 "solid" "white"))
+  (on-draw show-it)
+  (on-tick flip-vertical 1.5))
 
-(big-bang  7
-  (check-with number?)
-  (on-draw blue-circle-of-size 200 200)
-  (on-tick add1 1/10))
+(big-bang (overlay pic:calendar (rectangle 200 200 "solid" "white"))
+  (on-draw show-it)
+  (on-tick rotate-cw 1/2))
 
-(define (growing-square side-length)
-  (place-image/align
-   (square side-length "solid" "orange")
-   100 100 "center" "center"
-   (rectangle 200 200 "solid" "white")))
+; move-right-10 : image -> image
+(check-expect (move-right-10 pic:calendar)
+              (beside (rectangle 10 0 "solid" "white") pic:calendar))
+(check-expect (move-right-10 (circle 3 "solid" "green"))
+              (beside (rectangle 10 0 "solid" "white")
+                      (circle 3 "solid" "green")))
 
-(big-bang 1
-  (check-with number?)
-  (on-draw growing-square 200 200)
-  (on-tick add1 1))
-
-(define (growing-2x1-rectangle height)
-  (place-image/align
-   (rectangle (sub1 height) height "solid" "purple")
-   100 100 "center" "center"
-   (rectangle 200 200 "solid" "white")))
-
-(define (add2-height height)
-  (+ 2 height))
-(define (add1-width width)
-  (add1 width))
-
-(big-bang 2
-  (check-with number?)
-  (on-draw growing-2x1-rectangle 200 200)
-  (on-tick add1 1))
-
-(define XCENTER 100)
-(define YCENTER 100)
-(define XSCALE 50)
-(define YSCALE 30)
-(define (SUM-EXPRESSION t)
-  (* 100(/ t 10)))
-
-(define (x-coord t)
-  (+ XCENTER (* XSCALE (cos (SUM-EXPRESSION t)))))
-
-(define (y-coord t)
-  (+ YCENTER (* YSCALE (sin (SUM-EXPRESSION t)))))
-
-(define (random-star t)
-  (place-image
-   (star 10 "solid" "black")
-   (x-coord t) (y-coord t)
-   (rectangle 200 200 "solid" "white")))
-
-(big-bang 5
-  (check-with number?)
-  (on-draw random-star 200 200)
-  (on-tick add1))
-
-; progress-bar : number(progress) -> Image
-; produces a bar image based on the number given
-
-
-(define (progress-bar progress-bar-percentage)
-  ; bar-width number
-  ; bar-height number
-  ; progress-bar-percentage number
-  ; bar-color string
-  (overlay/align "left" "middle"
-                 (rectangle  progress-bar-percentage 20 "solid" "blue")
-                 (rectangle 120 20 "outline" "blue")))
-
-
-(big-bang 5
-  (check-with number?)
-  (on-draw progress-bar)
-  (on-tick add1 1/4))
-
-; mouse handlers w / draw 
-
-(define (calendar-at-x x)
-  (place-image
-   pic:calendar
-   x 50
-   (rectangle 200 200 "solid" "white")))
-
-"Examples of add1-on-mouse:"
-(check-expect
- (add1-on-mouse 3 29 348 "blarg") 4)
-(check-expect
- (add1-on-mouse 15 503 6 "glink") 16)
-
-(define (add1-on-mouse x mouse-x mouse-y event)
-  ; x number
-  ; mouse-x number (ignore)
-  ; mouse-y number (ignore)
-  ; event whatever (ignore)
-  (+ x 1) ; or, if you prefer, (add1 x)
+(define (move-right-10 picture)
+  ; picture image
+  (beside (rectangle 10 0 "solid" "white") picture)
   )
 
-; sub4-on-key : number (x) key -> number
-(check-expect (sub4-on-key 7 "dummy argument") 3)
-(check-expect (sub4-on-key 4 "whatever") 0)
-(define (sub4-on-key x key)
-  ; x number
-  ; key whatever (ignore)
-  (- x 4)
+(big-bang pic:calendar
+  (on-draw show-it 500 100)
+  (on-tick move-right-10 1))
+
+; move-down-5 : image -> image
+(check-expect (move-down-5 pic:calendar)
+              (above
+               (rectangle 0 5 "solid" "white") pic:calendar))
+
+(define (move-down-5 picture)
+  ; picture          image
+  (above
+   (rectangle 0 5 "solid" "white") picture))
+(big-bang pic:calendar
+  (on-draw show-it 500 100)
+  (on-tick move-down-5 1/2))
+
+; move-left-3 : image -> image
+(check-expect (move-left-3 pic:calendar)
+              (place-image pic:calendar 
+                           32 31
+                           (rectangle 100 62 "solid" "white")))
+
+(define (move-left-3 picture)
+  ; picture image
+  (place-image picture 
+               32 31
+               (rectangle 100 62 "solid" "white")))
+
+(big-bang pic:calendar
+  (on-draw show-it 500 100)
+  (on-tick move-left-3 1/2))
+
+; double-dots : image -> image
+; doubles dots every two seconds
+
+
+(big-bang (circle 2 "solid" "red")
+  (on-draw show-it 500 100)
+  (on-tick double-dots 3))
+
+(check-expect (double-dots (circle 2 "solid" "red"))
+              (beside (circle 2 "solid" "red")
+                      (circle 2 "solid" "red")))
+
+(check-expect (place-in-center pic:calendar)
+              (place-image/align pic:calendar
+                                 250 50 "center" "center"
+                                 (rectangle 500 100 "solid" "white")))
+
+(define (place-in-center picture)
+  (place-image/align picture
+                     250 50 "center" "center"
+                     (rectangle 500 100 "solid" "white")))
+
+(define (double-dots dot)
+  (beside dot
+          dot))
+
+(big-bang (circle 2 "solid" "red")
+  (on-draw place-in-center)
+  (on-tick double-dots 3))
+
+; place-on-pink : image -> image
+
+(check-expect (place-on-pink pic:calendar)
+              (place-image pic:calendar
+                           100 40
+                           (rectangle 150 200 "solid" "pink")))
+(check-expect (place-on-pink (triangle 30 "solid" "blue"))
+              (place-image (triangle 30 "solid" "blue")
+                           100 40
+                           (rectangle 150 200 "solid" "pink")))
+
+(define (place-on-pink picture)
+  ; picture image
+  (place-image picture
+               100 40
+               (rectangle 150 200 "solid" "pink"))
   )
 
-(big-bang 250
-  (check-with number?)
-  (on-draw calendar-at-x 500 100)
-  (on-mouse add1-on-mouse)
-  (on-key sub4-on-key))
+(big-bang pic:calendar
+  (on-tick rotate-cw 1/2)
+  (on-draw place-on-pink))
+
+(define pix-art .)
+
+
+(define (smooth-rotate picture)
+  (rotate -5 picture))
+
+(define (place-on-center picture)
+  ; picture image
+  (overlay
+   (overlay   picture
+              (circle 45 "solid" "pink"))
+   (rectangle 150 200 "solid" "pink")))
+
   
-(define (sub5 y)
-  (+ y 5))
-
-(define (some-picture-y y)
-  (place-image (circle 5 "solid" "blue")
-               10 (sub5 y) 
-               (rectangle 200 200 "solid" "white")))
-
-(big-bang  7
-  (check-with number?)
-  (on-draw some-picture-y 200 200)
-  (on-tick sub5 1/2))
-
-; dot that doubles every 5 seconds and shrinks 4 pixels when a key is pressed
-
-(define (dot-double radius)
-  (* 2 radius))
-
-(define (dotshrink-on-key radius key)
-  (abs(- radius 4)))
-
-(define (special-dot radius)
-  (place-image/align (circle radius "solid" "blue")
-                     100 100 "center" "center"
-                     (rectangle 200 200 "solid" "white")))
-
-(big-bang 5
-  (check-with number?)
-  (on-draw special-dot 200 200)
-  (on-tick dot-double 5)
-  (on-key dotshrink-on-key))
-
-(define (switch x)
-  (- 80 x))
-
-(define (moving-disk x)
-  (overlay/xy (circle 15 "solid" "red")
-              x 0
-              (beside (circle 20 "solid" "blue") (circle 20 "solid" "green"))))
-
-(big-bang 20
-  (check-with number?)
-  (on-draw moving-disk)
-  (on-tick switch 1))
-
-; progress-bar : number(progress) -> Image
-; produces a bar image based on the number given
-
-; Decreasing progress bar
-
-(define (halved x)
-  (/ x 2))
-
-(define (progress-bar x)
-  ; bar-width number
-  ; bar-height number
-  ; progress-bar-percentage number
-  ; bar-color string
-  (overlay/align "left" "middle"
-                 (rectangle x 20 "solid" "blue")
-                 (rectangle 120 20 "outline" "blue")))
-
-(big-bang 120
-  (check-with number?)
-  (on-draw progress-bar)
-  (on-tick halved 1))
-
-; Random x-coordinate picture
-
-(define (x-num x)
-  (+ (* 20 (random 5)) 20))
-
-(define (moving-picture x)
-    (place-image (circle 15 "solid" "red")
-                x 100
-              (rectangle 200 200 "solid" "black")))
-
-(big-bang (random 5)
-  (check-with number?)
-  (on-draw moving-picture)
-  (on-tick x-num 1))
-
-(define (one-pixel x)
-  (- (expt (random 3) 1)(* x 1)))
-
-(define (left-or-right x)
-      (place-image (circle 15 "solid" "red")
-                (+ 50 x) 100
-              (rectangle 200 200 "solid" "black")))
-
-(big-bang (random 3)
-  (check-with number?)
-  (on-draw left-or-right)
-  (on-tick one-pixel 1/4))|#
-
-; Random dots
-#|(define DOT
-  (circle 4 "solid" "black"))
-
-(define blank-screen
-  (rectangle 200 200 "solid" "white"))
- 
-(define (next-dot x)
-  (overlay/xy  x
-                (random 200)  (random 200))
-               (old-dot DOT)))
-
-(define (old-dot x)
-  (overlay/align "center" "center"
-   (overlay/xy x
-                (random 200) (random 200)
-            (circle 50 "solid" "white"))
-            blank-screen))
   
-(big-bang DOT
-  (on-tick next-dot 1/2)
-  (on-draw old-dot 200 200))|#
-; Random dots
-(define DOT
-  (circle 4 "solid" "black"))
+(big-bang pix-art
+  (on-tick smooth-rotate .1)
+  (on-draw place-on-center))
 
-(define blank-screen
-  (rectangle 200 200 "solid" "white"))
- 
-(define (next-dot x)
-  (overlay/xy  x
-                (random 200) (random 200)
-               DOT))
 
-(define (old-dot x)
-  (overlay/xy x
-              (random 200)  (random 200)
-              blank-screen))
 
-(big-bang DOT
-  (on-tick next-dot 1/2)
-  (on-draw old-dot 200 200))
+(define (rot pic1)
+  (rotate 5 pic1))
+
+(define (lake img)
+  (place-images (list img
+                      (flip-vertical img))
+                (list (make-posn 470 470)
+                      (make-posn 470 430))
+                (square 500 "solid" "green")))
+
+
+  
+  
+(big-bang .
+  (on-draw lake)
+  (on-tick rot 1))
+
+(define (background img)
+  (place-images (list img
+                      (flip-vertical img)
+                      (rotate-ccw img))
+                (list (make-posn 470 470)
+                      (make-posn 470 430)
+                      (make-posn 440 300))
+                (square 500 "solid" "green")))
+
+(big-bang .
+  (on-draw background)
+  (on-tick rot 1))
+
+(define (rot2 pic1)
+  (rotate -5 pic1))
+
+(define (background img)
+  (place-images (list  img
+                      (rotate-cw(rotate-180 img))
+                      (rotate-cw(flip-vertical img)))
+                (list (make-posn 200 250)
+                      (make-posn 470 430)
+                      (make-posn 440 300))
+                (square 500 "solid" "green")))
+
+(big-bang .
+  (on-draw background)
+  (on-tick rot2 1))
+
+(check-expect
+(move-right-10-on-mouse pic:calendar 318 27 "whatever")
+(beside (rectangle 10 0 "solid" "white") pic:calendar))
+(check-expect
+(move-right-10-on-mouse (circle 3 "solid" "green") -3784 3.7 "blah")
+(beside (rectangle 10 0 "solid" "white")
+(circle 3 "solid" "green")))
+
+
+(define (move-right-10-on-mouse picture x y mouse-event)
+; picture image
+; x number
+; y number
+; mouse-event whatever this is
+(beside (rectangle 10 0 "solid" "white") picture)
+)
+
+(big-bang pic:calendar
+(on-draw show-it 500 100)
+(on-mouse move-right-10-on-mouse))
+
+; calendar-at-mouse : image(old-picture)
+; num(x) num(y) mouse-event -> image
+
+; Produces a picture of a calendar, with its top-left corner
+; x pixels from the left and y pixels down from the top.
+; Assumes x and y are both positive integers.
+
+(define white-background (rectangle 500 300 "solid" "white"))
+
+(check-expect
+(calendar-at-mouse pic:stick-figure 34 26 "huh?")
+(place-image pic:calendar 34 26 white-background))
+
+; whatever other examples you’ve come up with
+(check-expect (calendar-at-mouse pic:bloch 40 40 "huh")
+              (place-image pic:calendar 40 40 white-background))
+
+(define (calendar-at-mouse old-picture x y mouse-event)
+; old-picture image (ignored)
+; x positive integer
+; y positive integer
+; mouse-event whatever this is (ignored)
+(place-image pic:calendar x y white-background)
+)
+
+(big-bang white-background
+(on-draw show-it)
+(on-mouse calendar-at-mouse))
+
+(big-bang (rectangle 0 0 "solid" "white")
+(on-draw show-it 500 300)
+(on-mouse calendar-at-mouse))
+
+; whatever other examples you’ve come up with
+(check-expect (calendar-at-mouse-x pic:bloch 40 150 "huh")
+              (place-image pic:calendar 40 150 white-background))
+
+(define (calendar-at-mouse-x old-picture x y mouse-event)
+; old-picture image (ignored)
+; x positive integer
+; y positive integer
+; mouse-event whatever this is (ignored)
+(place-image pic:calendar x 150 white-background)
+)
+
+(big-bang white-background
+(on-draw show-it)
+(on-mouse calendar-at-mouse-x))
+
+(big-bang (rectangle 0 0 "solid" "white")
+(on-draw show-it 500 300)
+(on-mouse calendar-at-mouse-x)
+  (record? true))
+
+;comeback and finish after ch 18
+(define (decrease-5 picture  )
+  ; picture          image
+  (above
+   (rectangle 0 5 "solid" "white") picture))
+
+(big-bang (rectangle 0 0 "solid" "white")
+  (on-draw show-it 500 300)
+  (on-tick move-right-10 1)
+  (on-key decrease-5 ))|#
