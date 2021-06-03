@@ -15,3 +15,28 @@
   (on-tick add-b-end 1)
   (on-draw a-with-b 100 100)
   (on-mouse chop-first-on-mouse))
+
+````````````````````
+(require picturing-programs)
+
+(define (add-str s)
+  (string-append  s "b"))
+
+(define (a-with-b s)
+  (place-image/align
+   (text s 18 "green")
+   0 10
+   "left" "top"
+   (empty-scene 600 80)))
+
+(define (chop-first-on-mouse s mouse-x mouse-y me)
+  (substring s 1))
+
+(define (string-world s)
+  (big-bang s
+    (check-with string?)
+    (on-tick add-str 1/2)
+    (on-draw a-with-b)
+    (on-mouse chop-first-on-mouse)))
+
+(string-world  "a")
