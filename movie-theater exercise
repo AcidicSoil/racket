@@ -1,42 +1,95 @@
 (require picturing-programs)
 
-(define (a-with-b str)
-  str)
-
-(define (add-b-end str)
-  (beside
-   str
-   (text "b" 18 "green")))
-
-(define (chop-first-on-mouse first-char mouse-x mouse-y event)
-  (substring first-char 1))
-
-(big-bang (text "a" 18 "green") 
-  (on-tick add-b-end 1)
-  (on-draw a-with-b 100 100)
-  (on-mouse chop-first-on-mouse))
-
-````````````````````
-(require picturing-programs)
-
-(define (add-str s)
+#|(define (add-str s)
   (string-append  s "b"))
 
 (define (a-with-b s)
-  (place-image/align
-   (text s 18 "green")
-   0 10
-   "left" "top"
-   (empty-scene 600 80)))
+   (text s 18 "green"))
 
 (define (chop-first-on-mouse s mouse-x mouse-y me)
-  (substring s 1))
+  (substring s (min 1 (string-length s))))
 
 (define (string-world s)
   (big-bang s
     (check-with string?)
     (on-tick add-str 1/2)
-    (on-draw a-with-b)
+    (on-draw a-with-b 200 200)
     (on-mouse chop-first-on-mouse)))
 
-(string-world  "a")
+(string-world  "a" )
+
+; animation that displays the word "cat"
+
+(define (first-half s)
+  (substring s 0 (floor(/ (string-length s) 2))))
+
+(define (last-half s)
+  (substring s (floor(/ (string-length s) 2)) (string-length s)))
+
+(define (insert-in-middle s)
+  (string-append (first-half s) "xyz" (last-half s)))
+
+(define (cat-function s)
+  (text s 18 "green"))
+
+(big-bang "cat"
+  (check-with string?)
+  (on-tick insert-in-middle 1)
+  (on-draw cat-function 200 200))
+
+; Digital clock
+
+(define (number->image num)
+  (text (number->string num) 18 "blue"))
+
+(define (show-number num)
+  (number->image num))
+
+(big-bang 0
+  (check-with number?)
+  (on-tick add1 1)
+  (on-draw show-number 200 200))
+
+; Moving digital clock
+
+(define blank-screen
+  (rectangle 200 200 "solid" "white"))
+
+(define (number->image num)
+  (text (number->string num) 18 "blue"))
+
+(define (num-mover num)
+  (+ num 1))
+
+(define (move-x-coord num)
+  (place-image (number->image num)
+               (num-mover num) 100
+               blank-screen))
+
+(big-bang 1
+  (check-with number?)
+  (on-tick add1 1)
+  (on-draw move-x-coord))|#
+
+(define blank-screen
+  (rectangle 200 200 "solid" "white"))
+
+(define (number->image s)
+  (text (number->string s) 18 "blue"))
+
+(define (show-coord s)
+  (place-image (number->image s)
+               100 100 
+               blank-screen))
+
+(define (mh s mouse-x mouse-y me)
+  mouse-x)
+
+(define (string-world s)
+  (big-bang s
+    (check-with number?)
+    (on-tick add1 1)
+    (on-draw show-coord)
+    (on-mouse mh)))
+
+(string-world 0)
