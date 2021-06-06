@@ -71,33 +71,23 @@
   (on-tick add1 1)
   (on-draw move-x-coord))|#
 
-
-#|(define (ordered-pair x y)
-  (beside (place-image (number->image x)
-               100 100
-               blank-screen)
-         (place-image (number->image y)
-               100 100
-               blank-screen)))|#
-
-(define (number->image-x s)
-  (text (string-append "(" (number->string s) ",") 18 "blue"))
-(define (number->image-y s)
-  (text (string-append  (number->string s) ")") 18 "blue"))
+(define (coord->image s)
+  (text s 18 "blue"))
 
 (define (show-coord s)
-  (beside(number->image-x s)
-         (number->image-y s)))
+  (coord->image s))
  
 (define (mh s mouse-x mouse-y me)
-   (string->number (string-append
-                    (number->string mouse-x)
-                    (number->string mouse-y))))
+  (string-append "("
+                 (number->string mouse-x)
+                 ","
+                 (number->string mouse-y)
+                 ")"))
 
 (define (string-world s)
   (big-bang s 
-    (check-with number?)
+    (check-with string?)
     (on-draw show-coord 200 200)
     (on-mouse mh)))
 
-(string-world 0)
+(string-world "")
