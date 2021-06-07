@@ -1,0 +1,255 @@
+(require picturing-programs)
+
+#|; Constants for the road-trip-cost problem:
+(define MILES-PER-GALLON #i28)
+(define PRICE-PER-GALLON 2.459)
+(define MOTEL-PRICE-PER-NIGHT 40)
+(define CAR-RENTAL-FIXED-FEE 10)
+(define CAR-RENTAL-PER-DAY 29.95)
+(define CAR-RENTAL-PER-MILE 0.10)
+; gas-needed : number (miles) -> number
+(define (gas-needed miles)
+; miles a number
+; MILES-PER-GALLON a number
+(/ miles MILES-PER-GALLON)
+)
+"Examples of gas-needed:"
+(check-within (gas-needed 0) 0 .01)
+(check-within (gas-needed 28) 1 .01)
+(check-within (gas-needed 56) 2 .01)
+(check-within (gas-needed 77) 2.75 .01)
+(check-within (gas-needed 358) 12.8 .1)
+; cost-of-gallons : number (gallons) -> number
+(define (cost-of-gallons gallons)
+; gallons number
+; PRICE-PER-GALLON number
+(* gallons PRICE-PER-GALLON)
+)
+"Examples of cost-of-gallons:"
+(check-within (cost-of-gallons 0) 0 .01)
+(check-within (cost-of-gallons 1) 2.459 .01)
+(check-within (cost-of-gallons 2) 4.918 .01)
+(check-within (cost-of-gallons 2.75) 6.76225 .01)
+; gas-cost : number (miles) -> number
+(define (gas-cost miles)
+; miles number
+(cost-of-gallons (gas-needed miles))
+)
+"Examples of gas-cost:"
+(check-within (gas-cost 0) 0 .01)
+(check-within (gas-cost 28) 2.459 .01) ; i.e. one gallon
+(check-within (gas-cost 56) 4.918 .01) ; i.e. two gallons
+(check-within (gas-cost 77) 6.76 .01) ; 2-3/4 gal; use calculator
+(check-within (gas-cost 358) 31.44 .01) ; yecch; use calculator
+
+; nights-in-motel : number (days) -> number
+; Assumes the number of days is a positive integer
+"Examples of nights-in-motel:"
+(check-expect (nights-in-motel 1) 0)
+(check-expect (nights-in-motel 2) 1)
+(check-expect (nights-in-motel 38) 37)
+; nights-in-motel : number (days) -> number
+; Assumes the number of days is a positive integer.
+(define (nights-in-motel days)
+; days a number
+(- days 1)
+)
+
+"Examples of motel-cost:"
+(check-expect (motel-cost 1) 0)
+(check-expect (motel-cost 2) 40)
+(check-expect (motel-cost 38) 1480)
+; motel-cost : number (days) -> number
+; Assumes the number of days is a positive integer.
+(define (motel-cost days)
+; days a number
+; MOTEL-PRICE-PER-NIGHT a number
+; (nights-in-motel days) a number
+(* MOTEL-PRICE-PER-NIGHT (nights-in-motel days))
+)
+
+
+; rental-cost : number (miles) number (days) -> number
+"Examples of rental-cost:"
+(check-within (rental-cost 0 1) 39.95 .01)
+(check-within (rental-cost 0 2) 69.90 .01)
+(check-within (rental-cost 100 1) 49.95 .01)
+(check-within (rental-cost 100 2) 79.90 .01)
+(check-within (rental-cost 28 1) 42.75 .01)
+(check-within (rental-cost 77 2) 77.60 .01)
+(check-within (rental-cost 358 3) 135.65 .01)
+
+(define (rental-cost miles days)
+; miles a number
+; days a number
+; CAR-RENTAL-FIXED-FEE a number
+; CAR-RENTAL-PER-DAY a number
+; CAR-RENTAL-PER-MILE a number
+; (* days CAR-RENTAL-PER-DAY) a number
+; (* miles CAR-RENTAL-PER-MILE) a number
+(+ (* days CAR-RENTAL-PER-DAY)
+(* miles CAR-RENTAL-PER-MILE)
+CAR-RENTAL-FIXED-FEE)
+)
+
+"Examples of road-trip-cost:"
+(check-within (road-trip-cost 0 1) 39.95 .01)
+; the gas and motels cost 0
+(check-within (road-trip-cost 0 2) 109.90 .01)
+; gas still 0, motel $40
+(check-within (road-trip-cost 28 1) 45.209 .01)
+; $42.75 for car, $0 for motel, $2.459 for gas
+(check-within (road-trip-cost 77 2) 124.36 .01)
+; $77.60 for car, c. $6.76 for gas, $40 for motel
+(check-within (road-trip-cost 358 3) 247.09 .01)
+; $135.65 for car, c. $31.44 for gas, $80 for motel
+; road-trip-cost : number (miles) number (days) -> number
+(define (road-trip-cost miles days)
+; miles a number
+; days a number
+; (gas-cost miles) a number
+; (motel-cost days) a number
+; (rental-cost miles days) a number
+(+ (gas-cost miles)
+(motel-cost days)
+(rental-cost miles days))
+)
+
+
+; area-of-circle : number -> Number
+(check-within (area-of-circle 0) 0 0.01)
+(check-within (area-of-circle 5) 78.53 0.01) 
+(define (area-of-circle radius)
+  (* pi (sqr radius)))
+
+; cylinder-volume : number number -> Number
+(check-within (cylinder-volume 5 5) 392.7 .01)
+(define (cylinder-volume radius height)
+  (* (area-of-circle radius) height))
+; cylinder-area : number number -> Number
+(check-within (cylinder-area 10 10) 1256.63 .01)
+(define (cylinder-area radius height)
+  (+ (* 2 (* pi (* radius height)))(* 2(area-of-circle radius))))
+
+
+;(check-within (pipe-area 10 10 11) 
+(define  (pipe-area inner-radius length thickness)
+  (* pi (* length  (* 2 (+ thickness inner-radius)))))
+
+; tax function
+(define TAX-RATE .05)
+(define TAX-INCREASE-INCREMENT 1000)
+
+
+(define (pro-tax-system salary)
+  (* salary (* .1 (* TAX-RATE (/ salary TAX-INCREASE-INCREMENT)))))
+
+(define (net-pay salary)
+  (- salary (pro-tax-system salary)))|#
+
+; house-building functions
+(define DOOR-HEIGHT 20)
+(define DOOR-WIDTH 10) 
+
+(define door (rectangle DOOR-WIDTH DOOR-HEIGHT "solid" "brown"))
+
+; build-roof : number(side-length) string(color) -> Image
+(define (build-roof width color)
+  (triangle width "outline" color))
+
+; build-base : number(height) number(width) string(color) -> Image
+(define (build-base width height color)
+  (rectangle width height "outline" color))
+
+; build-house : number(width) number(height) string(color) -> Image
+(define (build-house width height color)
+  (above (build-roof width color)
+         (overlay/align "center" "bottom" door (build-base width height color))))
+
+; airport-ticket functions
+(define AVG-NUMBER-OF-PASSENGERS 120)
+(define AVERAGE-CHANGE-IN-PASSENGERS 4)
+(define BASE-TICKET 200)
+(define TICKET-PRICE-CHANGE 10)
+(define PRICE-SENS  (/ AVERAGE-CHANGE-IN-PASSENGERS TICKET-PRICE-CHANGE))
+(define AIRPLANE-WEIGHT 50000)
+(define PASSENGERS-WEIGHT-WITH-LUGGAGE 250)
+(define CREWS-WEIGHT-WITH-LUGGAGE 1000)
+(define PRICE-PER-GALLON 2.999)
+(define CREW-SALARY 450)
+
+(define (passengers ticket-price)  
+  (- AVG-NUMBER-OF-PASSENGERS (* (- ticket-price BASE-TICKET) PRICE-SENS)))
+
+(define (revenue ticket-price)
+  (* ticket-price (passengers ticket-price)))
+
+; total-human-weight : number(ticket-price) -> Number
+(check-expect (total-human-weight 200) 31000)
+(check-expect (total-human-weight 190) 32000)
+(define (total-human-weight ticket-price)
+  (+ CREWS-WEIGHT-WITH-LUGGAGE (* PASSENGERS-WEIGHT-WITH-LUGGAGE (passengers ticket-price))))
+
+; loaded-weight : number(ticket-price) -> Number
+(check-expect (loaded-weight 200) 81000)
+(check-expect (loaded-weight 190) 82000)
+(define (loaded-weight ticket-price)
+  (+ AIRPLANE-WEIGHT (total-human-weight ticket-price)))
+
+; price-of-gas-per-trip : number(ticket-price) -> Number
+(check-within (price-of-gas-per-trip 200) 12145.95 .01)
+(check-within (price-of-gas-per-trip 190) 12295.9 .01)
+(define (price-of-gas-per-trip ticket-price)
+  (* (/ (loaded-weight ticket-price) 20) PRICE-PER-GALLON))
+
+(check-within (total-cost-of-trip 200) 12595.95 .01)
+(define (total-cost-of-trip ticket-price)
+  (+ (price-of-gas-per-trip ticket-price) CREW-SALARY))
+
+(define (airline-profit ticket-price)
+  (- (revenue ticket-price)
+     (total-cost-of-trip ticket-price)))
+
+; Random text-font functions
+
+(define FRAME-WIDTH 10)
+(define FRAME-HEIGHT 6)
+
+(define RANDOM-NUM (+ 1(random 30)))
+
+(define (color->image color)
+  (text (string-append color " ") RANDOM-NUM color))
+
+(define (random-num->image color)
+  (text (number->string RANDOM-NUM) RANDOM-NUM color))
+
+(define (text-box color)
+  (beside (color->image color)
+          (random-num->image color))) 
+
+(define (FRAME-WIDTH-EXPRESSION color)
+  (+ FRAME-WIDTH
+     (image-width (random-num->image color))
+     (image-width (color->image color))))
+
+(define (FRAME-HEIGHT-EXPRESSION color)
+  (+ FRAME-HEIGHT
+     (image-height (random-num->image color))
+     (image-height (color->image color))))
+
+(define (frame-pic color)
+  ; image image
+  ; frame-color string
+  ; frame-thickness number 
+  (overlay/align "center" "middle"
+                 
+                 (text-box color) (rectangle
+                                   (FRAME-WIDTH-EXPRESSION color)
+                                   (FRAME-HEIGHT-EXPRESSION color)"outline" color)))
+
+(define (string-world color)
+  (big-bang color
+    (check-with string?)
+    (on-draw frame-pic 200 200)))
+
+(string-world  "blue" )
