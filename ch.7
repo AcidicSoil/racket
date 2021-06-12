@@ -1,0 +1,548 @@
+(require picturing-programs)
+(provide (all-defined-out))
+
+(define distance 120)
+(define time 60)
+
+;(/ distance time)
+
+(define bignum 1234567890)
+; cube : number -> number
+(check-expect (cube 0) 0)
+(check-expect (cube 2) 8)
+(check-expect (cube -3) -27)
+(check-expect (cube 2/3) 8/27)
+(check-within (cube (sqrt 2)) 2.828 0.01)
+(define (cube num)
+  ; num number 2/3
+  ; should be number 8/27
+  (* num num num)
+  )
+;(cube 19) "should be a little under 8000"
+;(cube bignum) "should be 28-29 digits long"
+
+(define (rect-peri l w)
+  (+ (* 2 l) (* 2 w)))
+
+(define (circ-peri r)
+  (* 2 pi r))
+; area-of-circle : number -> Number
+(check-within (area-of-circle 0) 0 0.01)
+(check-within (area-of-circle 5) 78.53 0.01) 
+(define (area-of-circle radius)
+  (* pi (sqr radius)))
+
+; area-of-ring : number (inner-radius)
+; number (outer-radius) -> number
+; assumes inner-radius ≤ outer-radius
+
+(check-within (area-of-ring 0 0) 0 0.01)
+(check-within (area-of-ring 2 2) 0 0.01)
+(check-within (area-of-ring 0 1) 3.14 0.01)
+(check-within (area-of-ring 0 2) 12.56 0.01)
+(check-within (area-of-ring 1 2) 9.42 0.01)
+; 4*3.14 for the outer circle, minus 3.14 for the inner circle
+(check-within (area-of-ring 2 5) 65.97 0.01)
+; 25*3.14 for the outer circle, minus 4*3.14 for the inner circle
+
+(define (area-of-ring inner-radius outer-radius)
+  ; inner-radius number
+  ; outer-radius number
+  (- (area-of-circle outer-radius)
+     (area-of-circle inner-radius))
+  )
+
+; hours->minutes : number -> Number
+; converts hours into minutes
+
+(check-within (hours->minutes 1) 60 0.01)
+(check-within (hours->minutes .25) 15 0.01)
+
+(define (hours->minutes hours)
+  ; hours number
+  (* hours 60))
+
+; days->hours : number -> Number
+; converts days into hours
+
+(check-within (days->hours 1) 24 .01)
+(check-within (days->hours .5) 12 .01)
+
+(define (days->hours days)
+  ; days number
+  (* days 24))
+
+; days->minutes : number Number
+; converts days into minutes
+
+(check-within (days->minutes 1) 1440 .01)
+(check-within (days->minutes .5) 720 .01)
+
+(define (days->minutes days)
+  ;days number
+  (hours->minutes (days->hours days)))
+
+; dhm->minutes : number(days) number(hours) number(minutes) -> Number
+; Takes in days, hours, and minutes and produces the number of minutes
+
+(check-within (dhm->minutes 1 1 1) 1501 .01)
+
+(define (dhm->minutes days hours minutes)
+  ; days  number
+  ; hours number
+  ; minutes number
+  (+ (days->minutes days) (hours->minutes hours) minutes))
+
+; feet->inches : number -> Number
+; converts feet to inches
+
+(check-within (feet->inches 1) 12 .01)
+(check-within (feet->inches .5) 6 .01)
+
+(define (feet->inches feet)
+  ; feet number
+  (* feet 12))
+
+; total-inches : number(feet) number(inches) -> Number
+; produces total inches
+
+(check-within (total-inches 5 2) 62 .1)
+
+(define (total-inches feet inches)
+  (+ (feet->inches feet) inches))
+
+; at-most-10 : number -> Number
+; produces either 10 or given number whichever is less
+
+(check-expect (at-most-10 10) 10)
+(check-expect (at-most-10 1) 1)
+
+(define (at-most-10 num)
+  ; num Number
+  (min num 10))
+
+; celsius->kelvin : number -> Number
+; converts celsius into kelvin
+
+(check-within (celsius->kelvin -273.15) 0 0.01)
+(check-within (celsius->kelvin 10) 283.15 0.01)
+(check-within (celsius->kelvin 0) 273.15 0.01)
+
+(define (celsius->kelvin celsius)
+  (+ celsius 273.15))
+
+; fahrenheit->celsius : number -> Number
+; converts fahrenheit to celsius
+
+(check-within (fahrenheit->celsius 0) -17.7778 .01)
+(check-within (fahrenheit->celsius 32) 0 .01)
+
+(define (fahrenheit->celsius fahrenheit)
+  ; fahrenheit number
+  (* (- fahrenheit 32) (/ 5 9)))
+
+; fahrenheit->kelvin : number -> Number
+; converts fahrenheit to kelvin
+
+(check-within (fahrenheit->kelvin 32) 273.15 .01)
+(check-within (fahrenheit->kelvin 0) 255.372 .001)
+
+(define (fahrenheit->kelvin fahrenheit)
+  ; fahrenheit number
+  (celsius->kelvin(fahrenheit->celsius fahrenheit)))
+
+; converts-3-digits : number(hundreds) number(tens) number(ones) -> Number
+; produces a number from given numbers
+
+(check-expect (converts-3-digits 1 2 3) 123)
+(check-expect (converts-3-digits 3 2 1) 321)
+
+(define (converts-3-digits hundreds tens ones)
+  ; hundreds number
+  ; tens number
+  ; ones number
+  (+ (* hundreds 100) (* tens 10) (* ones 1)))
+
+; convert-3-reversed : number(ones) number(tens) number(hundreds) -> Number
+; produces given numbers in reversed order
+
+(check-expect (convert-3-reversed 1 2 3) 321)
+(check-expect (convert-3-reversed 3 2 1) 123)
+
+(define (convert-3-reversed ones tens hundreds)
+  ; ones number
+  ; tens number
+  ; hundreds number
+  (converts-3-digits hundreds tens ones))
+
+; top-half : image -> Image
+; produces the top half of image
+
+(check-expect (top-half (circle 30 "solid" "green"))
+              (crop-bottom (circle 30 "solid" "green") (/ (image-height (circle 30 "solid" "green")) 2)))
+
+(define (top-half picture)
+  ; picture image
+  ; number Number
+  (crop-bottom picture (/ (image-height picture)2)))
+
+; splice-picture : image image -> Image
+; crops the right side of image1 and the left side of image2 and lays them beside eachother
+
+(check-expect (splice-pictures ..)
+              (beside
+               (crop-right .(/ (image-width .) 2))
+               (crop-left . (/ (image-width .) 2))))
+
+(define (splice-pictures left-image right-image)
+  ; left-image Image
+  ; right-image Image
+  (beside
+   (crop-right left-image(/ (image-width left-image) 2))
+   (crop-left right-image(/ (image-width right-image) 2))))
+
+; progress-bar : number(width) number(height) number(progress) string(color) -> Image
+; produces a bar image based on the numbers and given color
+
+(check-expect (progress-bar 100 10 50 "green")
+              (overlay/align "left" "middle"
+                             (rectangle (max 50) 10 "solid" "green")
+                             (rectangle 100 10 "outline" "green")))
+
+(define (progress-bar bar-width bar-height progress-bar-percentage bar-color)
+  ; bar-width number
+  ; bar-height number
+  ; progress-bar-percentage number
+  ; bar-color string
+  (overlay/align "left" "middle"
+                 (rectangle (max progress-bar-percentage) bar-height "solid" bar-color)
+                 (rectangle bar-width bar-height "outline" bar-color)))
+
+; bar-grap : number(bar1) number(bar2) number(bar3) number(bar4)
+; produces a four column bar-graph from the given numbers
+
+(check-expect (bar-graph 3 10 25 15)
+              (beside
+               (beside
+                (beside
+                 (rotate-ccw (progress-bar 100 10 3 "red"))
+                 (rotate-ccw (progress-bar 100 10 10 "blue")))
+                (rotate-ccw (progress-bar 100 10 25 "green")))
+               (rotate-ccw (progress-bar 100 10 15 "yellow"))))
+
+(define (bar-graph bar1 bar2 bar3 bar4)
+  ; bar1 number
+  ; bar2 number
+  ; bar3 number
+  ; bar4 number
+  (beside
+   (beside
+    (beside
+     (rotate-ccw (progress-bar 100 10 bar1 "red"))
+     (rotate-ccw (progress-bar 100 10 bar2 "blue")))
+    (rotate-ccw (progress-bar 100 10 bar3 "green")))
+   (rotate-ccw (progress-bar 100 10 bar4 "yellow"))))
+
+; frame-pic : image string(color) number(thickness)
+; produces a image in a boxed frame of the given color and thickness
+
+#|(check-expect (frame-pic . "blue" 100)
+              (overlay/align "center" "middle"
+                             .
+                             (square  100 "solid" "blue")))|#
+
+(define (frame-pic image frame-thickness frame-color)
+  ; image image
+  ; frame-color string
+  ; frame-thickness number 
+  (overlay/align "center" "middle"
+                 image (rectangle (+ frame-thickness (image-height image)) (+ frame-thickness (image-width image)) "solid" frame-color)))
+
+; offset-tile : image -> Image
+; Produces an image twice as tall the top row is the original image, and the bottom row is the image split in
+; half and put back together in reverse order
+
+
+
+(define (offset-tile image)
+  (above/align "middle"
+               image
+               (beside
+                (cropped-left image)
+                (cropped-right image))))
+
+(define (cropped-right image)
+  (crop-right image (/ (image-width image) 2)))
+
+(define (cropped-left image)
+  (crop-left image (/ (image-width image) 2)))
+
+(define tile (offset-tile .))
+
+
+; build3-image : number(width) number(height)
+; function(red-function)
+; function(green-function)
+; function(blue-function)
+; -> image
+
+#|(check-expect (red-function 0 53) 0)
+(check-expect (red-function 50 17) 250)
+(check-expect (red-function 20 40) 100)
+
+(define (red-function x y)
+  ; x     a number
+  ; y     a number
+  (* 5 x))
+
+(check-expect (green-function 0 53) 0)
+(check-expect (green-function 50 50) 0)
+(check-expect (green-function 25 0) 0)
+
+(define (green-function x y)
+; x a number
+; y a number
+0
+)|#
+
+; builds an image black to red from left to right (see above lines 282-305)
+(define (always-zero x y)
+  ; x a number
+  ; y a number
+  0
+  )
+
+(define (5x x y)
+  ; x a number
+  ; y a number
+  (* 5 x)
+  )
+
+;(build3-image 50 50 5x always-zero  always-zero)
+
+; build-image function exercises
+
+(define (green-exp y)
+  (min 255(* 5 y)))
+
+;(build-image 100 100 help-function)
+
+#|(check-expect (red-function 50 53) 250)
+(check-expect (red-function 50 17) 250)
+(check-expect (red-function 20 40) 100)|#
+
+(define (red-function1 x y)
+  (* 5 y))
+
+(define (green-function1 x y)
+  0)
+
+(define (blue-function1 x y)
+  (* 5 x))
+
+;(build3-image 50 50 red-function1 always-zero  blue-function1)
+
+; safe-2.55x : number(x) number(y) -> number
+(check-expect (safe-2.55x 0 17) 0)
+(check-expect (safe-2.55x 45 27) 115)
+(check-expect (safe-2.55x 100 7) 255)
+(check-expect (safe-2.55x 189 53) 255)
+(define (safe-2.55x x y)
+  ; x a number
+  ; y a number
+  (min 255 (real->int (* 2.55 x))))
+
+; safe-2.55y : number(y) number(y) -> number
+
+(define (safe-2.55y x y)
+  ; x a number
+  ; y a number
+  (min 255 (real->int (* 2.55 y))))
+
+; safe-5x : number(x) number(y) -> number
+
+(define (safe-5x x y)
+  ; x a number
+  ; y a number
+  (min 255 (real->int  (* 5 x ))))
+
+
+
+(define (r-g x y)
+  ; x a number
+  ; y a number
+  (min 255 (real->int  (- 255 (* x 2.55) ))))
+
+(define (g-r x y)
+  (min 255 (real->int   (* x 2.55) )))
+
+(build3-image 100 100 r-g  g-r always-zero)
+
+; build-image version exercise
+
+(define (some-function x y)
+  (make-color (r-g x y) (g-r x y) 0))
+;(build-image 100 100 some-function)
+
+;black top left corner to yellow bottom  right corner
+; safe-2.55y : number(y) number(y) -> number
+
+(define (safe-2.55xy x y)
+  ; x a number
+  ; y a number
+  (min 255 (real->int (+ (* 2.55 x)y))))
+
+(build3-image 100 100 safe-2.55xy  safe-2.55xy  always-zero)
+
+; black diagonal from top left to bottom right corner
+; and yellow fading yellow in top right and bottom left corner
+; safe-2.55y : number(y) number(y) -> number
+
+(define (b-y x y)
+  (min 255 (real->int (abs (- (* x 2.55) (* y 2.55))))))
+
+(build3-image 100 100  b-y b-y always-zero)
+
+; build-image version exercise
+
+(define (another-function x y)
+  (make-color (b-y x y) (b-y x y) 0))
+;(build-image 100 100 another-function)
+
+(check-expect (red-function 10 20 30 40 50) 0)
+(check-expect (red-function 1000 100 250 125 0) 0)
+(define (red-function x y red green blue)
+  ; x a number
+  ; y a number
+  ; red a number
+  ; green a number
+  ; blue a number
+  0)
+
+(check-expect (green-function 10 20 30 40 50) 40)
+(check-expect (green-function 1000 100 250 125 0) 125)
+(define (green-function x y red green blue)
+  ; x a number
+  ; y a number
+  ; red a number
+  ; green a number
+  ; blue a number
+  green)
+
+(check-expect (blue-function 10 20 30 40 50) 50)
+(check-expect (green-function 1000 100 250 125 0) 125)
+(define (blue-function x y red green blue)
+  ; x a number
+  ; y a number
+  ; red a number
+  ; green a number
+  ; blue a number
+  blue)
+
+
+;(map3-image red-function green-function blue-function .)
+
+; remove-red
+
+(check-expect (remove-red-pixels 10 20 30 40 50) 0)
+(check-expect (remove-red-pixels 1000 100 250 125 0) 0)
+(define (remove-red-pixels x y red green blue)
+  ; x a number
+  ; y a number
+  ; red a number
+  ; green a number
+  ; blue a number
+  0)
+
+
+(define (remove-red image)
+  (map3-image remove-red-pixels green-function blue-function image))
+  
+;(remove-red .)
+
+; swap-red-blue
+
+(check-expect (swap-red-blue-pixels 10 20 30 40 50) 50)
+(check-expect (swap-red-blue-pixels 1000 100 250 125 0) 0)
+
+(define (swap-red-blue-pixels x y red green blue)
+  (blue-function x y red green blue))
+
+(define (swap-red-blue image)
+  (map3-image red-function green-function swap-red-blue-pixels image))
+
+;(swap-red-blue .)
+
+; convert-to-gray 
+
+(define (convert-to-gray-pixels x y red green blue)
+  210)
+
+(define (convert-to-gray image)
+  (map3-image convert-to-gray-pixels convert-to-gray-pixels convert-to-gray-pixels image))
+
+(convert-to-gray .)
+
+
+(define (blue-gradient-pixels x y red green blue)
+  ; x a number
+  ; y a number
+  (min 255 (real->int   (abs(+ (- y 255 (* y 2.55) ) 255)))))
+
+(define (255-red-pixels x y red green blue)
+  red)
+
+(define (255-green-pixels x y red green blue)
+  green)
+
+(define (apply-blue-gradient image)
+  (map3-image 255-red-pixels 255-green-pixels blue-gradient-pixels image))
+
+;(apply-blue-gradient .)
+
+; bitmapize : image -> image
+
+#|(define (red-colors x y red green blue)
+  255)
+
+(define (green-colors x y red green blue)
+  255)
+
+(define (blue-colors x y red green blue)
+  255)
+
+
+(define (bitmapize image)
+  (map3-image red-colors green-colors blue-colors image))|#
+
+(define (red-colors x y red green blue)
+  0)
+
+(define (green-colors x y red green blue)
+  0)
+
+(define (blue-colors x y red green blue)
+  0)
+(define (bitmapize image)
+  (map3-image red-colors green-colors blue-colors image))
+
+(bitmapize (scale 5 (triangle (+ (random 10) 1) "solid" "blue")))
+(scale 5 (bitmapize (triangle 10 "solid" "blue")))
+
+;(random 10)
+; check-expect test version for random numbers
+(check-member-of (random 6) 0 1 2 3 4 5)
+; For larger numbers
+(check-range (random 1000) 0 999)
+
+(define (random-digit num)
+  (random 10))
+
+(define (roll-die x)
+  (+ 1(random 6)))
+;roll-die
+(define (roll-two-dice x)
+  (+ 2 (random 12)))
+
+(define (random-picture width height)
+  (rectangle width height "solid" (make-color (random 256) (random 256) (random 256)))) 
