@@ -1,6 +1,3 @@
-;; The first three lines of this file were inserted by DrRacket. They record metadata
-;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-beginner-reader.ss" "lang")((modname ch.15) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
 (require picturing-programs)
 (require "ch10pix.rkt")
 (require "ch.13.rkt")
@@ -113,22 +110,95 @@
 "diag picture"
 (build3-image 150 100 yellow-diag yellow-diag blue-diag)
 
-; make-strips : number number -> Image
+; make-stripes : number number -> Image
 
 ; Takes in a width and height to create a shape
 ; with even and odd numbered stripes
 
 (define (red-stripe x y)
-  (cond [(= (modulo (* y y) 2) 0 ) 255]
+  (cond [(= (modulo (* y y) 2) 0) 255]
         [else 0]))
 
 (define (blue-stripe x y)
-  (cond[(= (modulo (* y y) 3) 1 ) 255]
+  (cond[(= (modulo (* y y) 3) 1) 255]
        [else 0]))
 
 (define (make-stripes width height)
   (build3-image width height red-stripe always-zero blue-stripe))
 
+; make-wide-stripe
 
+(define (add5 y)
+  (+ y 5))
+
+(define (red-stripe2 x y)
+  (cond [(even?  (add5 y)) 255] 
+        [else 0]))
+
+(define (blue-stripe2 x y)
+  (cond[(odd? (- 150 y)) 255]
+       [else 0]))
+
+(define (make-wide-stripes width height)
+  (build3-image width height red-stripe2 always-zero blue-stripe2))
+
+(build3-image 150 100 red-stripe2 always-zero blue-stripe2)
+
+(define red (color 255 0 0 255))
+(define blue (color 0 0 255 255))
+
+(define total-rows
+  (/ HEIGHT 5)) ;20
+
+(define (row y)
+  (+ (* y 5) 4))
+
+(define (0-4? n)
+  (and (>= n 0)
+       (<= n 4)))
+
+(define (5-9? n)
+  (and (>= n 5)
+       (<= n 9)))
+
+(define (10-14? n)
+  (and (>= n 10)
+       (<= n 14)))
+
+(define (15-19? n)
+  (and (>= n 15)
+       (<= n 19)))
+
+(define (20-24? n)
+  (and (>= n 20)
+       (<= n 24)))
+
+(define (25-29? n)
+  (and (>= n 25)
+       (<= n 29)))
+
+(define (30-34? n)
+  (and (>= n 30)
+       (<= n 34)))
+
+(define (35-39? n)
+  (and (>= n 35)
+       (<= n 39)))
+
+(define (blue-or-red x y)
+  (cond [(0-4? y) blue]
+        [(5-9? y) red]
+        [(10-14? y) blue]
+        [(15-19? y) red]
+        [(20-24? y) blue]
+        [(25-29? y) red]
+        [(30-34? y) blue]
+        [(35-39? y) red]
+        [else blue]))
+
+(define (random-br-picture width height)
+  (build-image width height blue-or-red))
+
+(build-image 150 100 blue-or-red)
 
 
