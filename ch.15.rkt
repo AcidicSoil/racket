@@ -120,85 +120,39 @@
         [else 0]))
 
 (define (blue-stripe x y)
-  (cond[(= (modulo (* y y) 3) 1) 255]
+  (cond[(= (modulo (* y y) 2) 1) 255]
        [else 0]))
 
 (define (make-stripes width height)
   (build3-image width height red-stripe always-zero blue-stripe))
 
-; make-wide-stripe
+;(build3-image 150 100 red-stripe always-zero blue-stripe)
 
-(define (add5 y)
-  (+ y 5))
-
-(define (red-stripe2 x y)
-  (cond [(even?  (add5 y)) 255] 
+; another version
+(define (red-even x y)
+  (cond [(even? (quotient y 5)) 255] 
         [else 0]))
 
-(define (blue-stripe2 x y)
-  (cond[(odd? (- 150 y)) 255]
-       [else 0]))
+(define (blue-odd x y)
+  (cond[(odd? (quotient y 5)) 255]
+       [else 0])) 
 
-(define (make-wide-stripes width height)
-  (build3-image width height red-stripe2 always-zero blue-stripe2))
+(build3-image 150 100 red-even always-zero blue-odd)
 
-(build3-image 150 100 red-stripe2 always-zero blue-stripe2)
-
+; 
 (define red (color 255 0 0 255))
 (define blue (color 0 0 255 255))
 
-(define total-rows
-  (/ HEIGHT 5)) ;20
-
-(define (row y)
-  (+ (* y 5) 4))
-
-(define (0-4? n)
-  (and (>= n 0)
-       (<= n 4)))
-
-(define (5-9? n)
-  (and (>= n 5)
-       (<= n 9)))
-
-(define (10-14? n)
-  (and (>= n 10)
-       (<= n 14)))
-
-(define (15-19? n)
-  (and (>= n 15)
-       (<= n 19)))
-
-(define (20-24? n)
-  (and (>= n 20)
-       (<= n 24)))
-
-(define (25-29? n)
-  (and (>= n 25)
-       (<= n 29)))
-
-(define (30-34? n)
-  (and (>= n 30)
-       (<= n 34)))
-
-(define (35-39? n)
-  (and (>= n 35)
-       (<= n 39)))
-
 (define (blue-or-red x y)
-  (cond [(0-4? y) blue]
-        [(5-9? y) red]
-        [(10-14? y) blue]
-        [(15-19? y) red]
-        [(20-24? y) blue]
-        [(25-29? y) red]
-        [(30-34? y) blue]
-        [(35-39? y) red]
+  (cond [(odd? (quotient y 5)) red]
         [else blue]))
 
-(define (random-br-picture width height)
-  (build-image width height blue-or-red))
-
 (build-image 150 100 blue-or-red)
+                                         
+
+; make-diag-stripes
+
+(define (make-diag-stripes width height)
+  ...)
 
 
