@@ -1,0 +1,37 @@
+(require picturing-programs)
+
+(define price-per-yard
+  5)
+(check-expect (yard-price 1)5)
+(check-expect (yard-price 2)10)
+(define (yard-price yards)
+  (* price-per-yard yards))
+
+(define (carpet-price-discount yards)
+  (cond [(< yards 100) .00]
+        [(and (>= yards 100)
+              (< yards 500)) .1]
+        [else .2]))
+
+(check-within (carpet-price 99) 495 .01)
+(check-within (carpet-price 100) 450 .01)
+(check-within (carpet-price 500) 2000 .01) 
+(define (carpet-price yards)
+  (- (yard-price yards)(* (carpet-price-discount yards) (yard-price yards))))
+
+; thermometer
+
+(define (temp-color temp)
+  (cond [(< temp 99) "green"]
+        [(and(>= temp 99)
+             (< temp 101)) "yellow"]
+        [else "red"]))
+
+(define (number->image num)
+  (text (number->string num) 18 (temp-color num)))
+
+(define (show-number num)
+  (number->image num))
+
+(define (digital-thermometer temp)
+  (number->image temp))
