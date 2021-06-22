@@ -35,3 +35,48 @@
 
 (define (digital-thermometer temp)
   (number->image temp))
+
+; letter-grade
+
+(define (letter-gradee grade)
+  (cond [(>= grade 90) "A"]
+        [(and (>= grade 80)
+              (< grade 90)) "B"]
+        [(and (>= grade 70)
+              (< grade 80)) "C"]
+        [(and (>= grade 60)
+              (< grade 70)) "D"]
+        [else "F"]))
+
+; who-won
+
+(define (who-won annes-votes bobs-votes charlies-votes)
+  (cond [(and (> annes-votes bobs-votes)
+              (> annes-votes charlies-votes)) "Anne"]
+        [(and (> bobs-votes annes-votes)
+              (> bobs-votes charlies-votes)) "Bob"]
+        [(and (> charlies-votes annes-votes)
+              (> charlies-votes bobs-votes)) "Charlie"]
+        [else "tie"]))
+
+; 4-votes->winner
+
+(define (same-votes? vote1 vote2)
+  (or (string=? vote1 vote2)
+      (string=? vote1 vote2)))
+
+(define (vote-check vote1 vote2)
+  (cond [(same-votes? vote1 vote2) "1"]
+        [else "0"]))
+
+(define (count-votes-4 canidate vote1 vote2 vote3 vote4)
+  (cond[(same-votes? canidate vote4) (+ (string->number (vote-check canidate vote4)) (string->number(vote-check canidate vote1)) (string->number (vote-check canidate vote2)) (string->number (vote-check canidate vote3)))]
+       [(same-votes? canidate vote3) (+ (string->number (vote-check canidate vote3)) (string->number(vote-check canidate vote1)) (string->number (vote-check canidate vote2)))]
+       [(same-votes? canidate vote2) (+ (string->number (vote-check canidate vote2)) (string->number(vote-check canidate vote1)))]
+       [(same-votes? canidate vote1) (string->number (vote-check canidate vote1))]
+       [else 0]))
+
+(define (4-votes->winner vote1 vote2 vote3 vote4)
+  ...)
+  
+  
