@@ -82,37 +82,11 @@
 (check-expect (4-votes->winner "bob" "charlie" "charlie" "charlie") "charlie")|#
 (define (4-votes->winner vote1 vote2 vote3 vote4)
   ...)
-(define (charge-up-to-500 charge)
-  (cond [(< charge 500) (* charge .0025)]
-        [else (* charge .0025)]))
 
-(define (charge-between-500-1500 charge)
-  (cond [(and(>= charge 500)
-             (< charge 1500)) (* charge .005)]
-        [else (* charge .005)]))
-
-(define (charge-between-1500-2500 charge)
-  (cond [(and (> charge 1500)
-              (<= charge 2500)) (* charge .0075)]
-        [else (* charge .0075)]))
-
-(define (charge-above-2500 charge)
-  (cond [(> charge 2500) (* charge .1)]
-        [else (* charge .1)]))
-
-
-
-(define (card-refund-calc charge)
-  (cond [(> charge 500) (* charge .0025)]
+(define (card-refund charge)
+  (cond [(<= charge 500) (* charge .0025)]
         [(and (> charge 500)
-              (<= charge 1500)) .005] 
+              (< charge 1500)) (+ (* 500 .0025) (* (- charge 500) .005))] 
         [(and (> charge 1500)
-              (<= charge 2500)) .0075]
-        [(> charge 2500) .01]
-        [else .0]))
-
-(define (total-refund charge)
-  (+ (* charge (card-refund-calc charge)) )
-
-(define (under-500? charge)
-  (< charge 500))
+              (< charge 2500)) (+ (* 500 .0025) (* 1000 .005) (* (- charge 1500) .0075))]
+        [(>= charge 2500) (+ (* 500 .0025) (* 1000 .005) (* 1000 .0075) (* (- charge 2500) .01))]))
