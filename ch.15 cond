@@ -90,3 +90,16 @@
         [(and (> charge 1500)
               (< charge 2500)) (+ (* 500 .0025) (* 1000 .005) (* (- charge 1500) .0075))]
         [(>= charge 2500) (+ (* 500 .0025) (* 1000 .005) (* 1000 .0075) (* (- charge 2500) .01))]))
+
+; show-clothing
+(check-expect (show-clothing "pants" "black") black-pants)
+(check-expect (show-clothing "pants" "navy") navy-pants)
+(check-expect (show-clothing "shirt" "white") white-shirt)
+(check-expect (show-clothing "shirt" "pink") pink-shirt)
+(check-expect (show-clothing "shoes" "pink") pink-shoes)
+(check-expect (show-clothing "shoes" "burgundy") burgundy-shoes)
+(check-expect (show-clothing "shoes" "navy") navy-shoes)\
+(check-expect (show-clothing "hat" "black")
+(text "What’s a hat?" 12 "red"))
+(check-expect (show-clothing "pants" "burgundy")
+(text "We don’t have pants in burgundy" 12 "red"))
