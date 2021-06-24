@@ -1,31 +1,14 @@
 (require picturing-programs)
 (require "ch15-pix.rkt")
+
+(define (light-color? thing)
+  (or(string=? thing "green")
+     (string=? thing "yellow")
+     (string=? thing "red")))
+             
+
 ; A light-color is any of the strings "green", "yellow", or "red".
-
-#|
-(check-expect (function-on-light-color "green") ...)
-(check-expect (function-on-light-color "yellow") ...)
-(check-expect (function-on-light-color "red") ...)
-(define (function-on-light-color c)
-(cond [(string=? c "green") ...]
-[(string=? c "yellow") ...]
-[(string=? c "red") ...]
-))
-|#
-
-#|
-(check-expect (function-returning-light-color ...) "green")
-(check-expect (function-returning-light-color ...) "yellow")
-(check-expect (function-returning-light-color ...) "red")
-(define (function-returning-light-color c)
-(cond [... "green"]
-[... "yellow"]
-[... "red"]
-))
-|#
-
 ; change-light : light-color -> light-color
-
 (check-expect (change-light "green") "yellow")
 (check-expect (change-light "yellow") "red")
 (check-expect (change-light "red") "green")
@@ -45,7 +28,7 @@
 )
 
 (big-bang "green"
-(check-with string?)
+(check-with light-color?)
 (on-draw show-light)
 (on-tick change-light 5)
 )
@@ -68,6 +51,18 @@
         [else "invalid option"]
         ))
 
+(define (change-picture image)
+ (cond [(image=? image basketball) baseball]
+       [(image=? image baseball) monopoly]
+       [(image=? image monopoly) basketball]))
+
+(define (show-picture image)
+  image)
 
 (define (slide-show image)
- (cond [()
+  (big-bang image
+  (check-with image?)
+  (on-draw show-picture)
+  (on-tick change-picture 3)))
+
+(slide-show basketball)
