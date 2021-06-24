@@ -1,4 +1,5 @@
 (require picturing-programs)
+(require "ch15-pix.rkt")
 
 (define price-per-yard
   5)
@@ -91,6 +92,20 @@
               (< charge 2500)) (+ (* 500 .0025) (* 1000 .005) (* (- charge 1500) .0075))]
         [(>= charge 2500) (+ (* 500 .0025) (* 1000 .005) (* 1000 .0075) (* (- charge 2500) .01))]))
 
+
+; bad-item : string(item) -> image
+(define (bad-item item)
+  ; item string
+  ; (string-append "What’s a " item "?") string
+  ; 12 number (font size)
+  ; "red" string (text color)
+  (text (string-append "What’s a " item "?") 12 "red"))
+"Examples of bad-item:"
+(check-expect (bad-item "hat") (text  "What’s a hat?" 12 "red"))
+(check-expect (bad-item "belt") (text  "What’s a belt?" 12 "red"))
+(define (bad-color item color)
+  (text (string-append "We don’t have " item " in " color) 12 "red"))
+
 ; show-clothing
 (check-expect (show-clothing "pants" "black") black-pants)
 (check-expect (show-clothing "pants" "navy") navy-pants)
@@ -98,8 +113,120 @@
 (check-expect (show-clothing "shirt" "pink") pink-shirt)
 (check-expect (show-clothing "shoes" "pink") pink-shoes)
 (check-expect (show-clothing "shoes" "burgundy") burgundy-shoes)
-(check-expect (show-clothing "shoes" "navy") navy-shoes)\
+(check-expect (show-clothing "shoes" "navy") navy-shoes)
 (check-expect (show-clothing "hat" "black")
-(text "What’s a hat?" 12 "red"))
+              (text "What’s a hat?" 12 "red"))
 (check-expect (show-clothing "pants" "burgundy")
-(text "We don’t have pants in burgundy" 12 "red"))
+              (text "We don’t have pants in burgundy" 12 "red"))
+
+(define (show-clothing item color)
+  ; item string
+  ; color string
+  (cond [ (string=? item "pants")
+          (cond [(string=? color "black") black-pants ]
+                [(string=? color "navy") navy-pants ]
+                [else (bad-color item color) ])]
+        [(string=? item "shirt")
+         (cond [(string=? color "pink") pink-shirt ]
+               [(string=? color "white") white-shirt ]
+               [else (bad-color item color) ])]
+        [(string=? item "shoes")
+         (cond [(string=? color "pink") pink-shoes ]
+               [(string=? color "burgundy") burgundy-shoes ]
+               [(string=? color "navy") navy-shoes ]
+               [else (bad-color item color) ])]
+        [ else (bad-item item) ]))
+
+; make-shape
+(define (make-shape shape size color)
+  (cond [(string=? shape "circle")
+         (cond [(string=? size "small")
+                (cond [(string=? color "blue") (circle 10 "solid" "blue")]
+                      [(string=? color "red") (circle 10 "solid" "red")]
+                      [(string=? color "green") (circle 10 "solid" "green")]
+                      [else (bad-color shape color)])]
+               [(string=? size "medium")
+                (cond [(string=? color "blue") (circle 30 "solid" "blue")]
+                      [(string=? color "red") (circle 30 "solid" "red")]
+                      [(string=? color "green") (circle 30 "solid" "green")]
+                      [else (bad-color shape color)])]
+               [(string=? size "large")
+                (cond [(string=? color "blue") (circle 50 "solid" "blue")]
+                      [(string=? color "red") (circle 50 "solid" "red")]
+                      [(string=? color "green") (circle 50 "solid" "green")]
+                      [else (bad-color shape color)])])]
+        [(string=? shape "triangle")
+         (cond [(string=? size "small")
+                (cond [(string=? color "blue") (triangle 10 "solid" "blue")]
+                      [(string=? color "red") (triangle 10 "solid" "red")]
+                      [(string=? color "green") (triangle 10 "solid" "green")]
+                      [else (bad-color shape color)])]
+               [(string=? size "medium")
+                (cond [(string=? color "blue") (triangle 30 "solid" "blue")]
+                      [(string=? color "red") (triangle 30 "solid" "red")]
+                      [(string=? color "green") (triangle 30 "solid" "green")]
+                      [else (bad-color shape color)])]
+               [(string=? size "large")
+                (cond [(string=? color "blue") (triangle 50 "solid" "blue")]
+                      [(string=? color "red") (triangle 50 "solid" "red")]
+                      [(string=? color "green") (triangle 50 "solid" "green")]
+                      [else (bad-color shape color)])])]))
+
+(define (classify thing)
+; thing anything
+(cond [(image? thing) "image"]
+[(string? thing) "string"]
+[(number? thing) "number"]
+[else "other" ]))
+
+
+; size
+(define (size thing)
+  (cond [(number? thing) (abs thing)]
+        [(string? thing) (string-length thing)]
+        [(image? thing) (* (image-width thing) (image-height thing))]))
+
+; big? : number or string -> string
+(define (big? thing)
+  ;thing : number or string
+  (cond [(number? thing)
+         (cond [(> thing 1000) "big"]
+               [else "small"])]
+        [(string? thing)
+         (cond [(> (string-length thing) 10) "big"]
+               [else "small"])]))
+        
+; same
+
+(define (not-same-type1 thing1 thing2)
+  (text (string-append "error " (number->string thing1) " is an integer data type and " thing2 " is a string data type. Either remove the quotes or add quotes to the other input. Example... 1 1 or  \"1\" \"1\" ") 12 "red")) 
+
+(define (not-same-type2 thing1 thing2)
+  (text (string-append "error " thing1 " is a string data type and " (number->string thing2) " is a number data type. Either remove the quotes or add quotes to the other input. Example... 1 1 or  \"1\" \"1\" ") 12 "red"))
+
+(define (same? arg1 arg2)
+  (cond [(and (number? arg1)
+              (string? arg2)) (not-same-type1 arg1 arg2)]
+        [(and (string? arg1)
+              (number? arg2)) (not-same-type2 arg1 arg2)]
+        [(and(number? arg1)
+             (number? arg2))
+         (cond [(= arg1 arg2) "same"]
+               [else "not the same"])]
+        [(and (string? arg1)
+              (string? arg2))
+         (cond [(string=? arg1 arg2) "same"]
+               [else "not the same"])])) 
+
+; smart-add
+(define (smart-add arg1 arg2)
+  (cond [(and (number? arg1)
+              (string? arg2)) (+ arg1 (string->number arg2))]
+        [(and (string? arg1)
+              (number? arg2)) (+ (string->number arg1) arg2)]
+        [(and (number? arg1)
+              (number? arg2)) (+ arg1 arg2)]
+        [(and (string? arg1)
+              (string? arg2)) (+ (string->number arg1) (string->number arg2))]))
+
+         
