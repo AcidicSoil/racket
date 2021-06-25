@@ -64,12 +64,9 @@
   (check-with light-color?v1)
   (on-draw color-pos)
   (on-tick change-light 5)))
-(string-world "green") 
+(string-world "green")
 
-; choose-picture : string -> Image
-; choose-picture: string("basketball", "baseball", or "Monopoly")->
-; image (basketball, baseball, or monopoly)
-
+; first version of slideshow with image as model
 "Examples of choose-picture:"
 (check-expect (choose-picture "basketball") basketball)
 (check-expect (choose-picture "baseball") baseball)
@@ -80,13 +77,16 @@
   (cond [(string=? string "basketball") basketball]
         [(string=? string "baseball") baseball]
         [(string=? string "Monopoly") monopoly]
-        [else "invalid option"]
-        ))
+        [else "invalid option"]))
+
+(define (greater-than-2? num)
+  (> num 2))
 
 (define (change-picture image)
   (cond [(image=? image basketball) baseball]
         [(image=? image baseball) monopoly]
-        [(image=? image monopoly) basketball]))
+        [(image=? image monopoly) (stop-with monopoly)]))
+               
 
 (define (show-picture image)
   image)
@@ -96,8 +96,44 @@
     (check-with image?)
     (on-draw show-picture)
     (on-tick change-picture 3)))
+(slide-show basketball)
+; Second version of slideshow with numbers as a model
 
-;(slide-show basketball)
+; choose-picture : string -> Image
+; choose-picture: string("basketball", "baseball", or "Monopoly")->
+; image (basketball, baseball, or monopoly)
+
+#|"Examples of choose-picture:"
+(check-expect (choose-picture 1) basketball)
+(check-expect (choose-picture 2) baseball)
+(check-expect (choose-picture 3) monopoly)
+
+(define (choose-picture number)
+  (cond [(= number 1) basketball]
+        [(= number 2) baseball]
+        [(= number 3) monopoly]))
+
+(define (change-picture number)
+  (cond [(= number 1) baseball]
+        [(= number 2) monopoly]
+        [(= number 3) basketball]))
+
+(define (show-picture number)
+  (cond [(= number 1) basketball]
+        [(= number 2) baseball]
+        [(= number 3) monopoly]))
+
+(define (after-2-seconds? number)
+  (> number 2))
+
+(define (slide-show number)
+  (big-bang number
+    (check-with number?)
+    (on-draw show-picture)
+    (on-tick change-picture 3)
+    (stop-when after-2-seconds?)))
+
+(slide-show 1)|#
 
 ; change-light with image as model
 
@@ -239,25 +275,31 @@
 
 
 (define (show-triangle color)
-  (cond [(string=? color "red") (triangle 10 "solid" "red")]
-        [(string=? color "green") (triangle 10 "solid" "green")]
-        [(string=? color "blue") (triangle 10 "solid" "blue")]))
+  (cond [(string=? color "red") (triangle 30 "solid" "red")]
+        [(string=? color "green") (triangle 30 "solid" "green")]
+        [(string=? color "blue") (triangle 30 "solid" "blue")]))
        
 
 
 (check-expect (next-color "red") "green")
 (check-expect (next-color "green") "blue")
-(check-expect (next-color "blue") (stop-with "blue"))
+(check-expect (next-color "blue") "red")
+;(check-expect (next-color "blue") (stop-with "blue"))
 
 (define (next-color old-color-name)
 ; old-color-name shape-color
 (cond [ (string=? old-color-name "red") "green" ]
 [ (string=? old-color-name "green") "blue" ]
-[ (string=? old-color-name "blue") (stop-with "blue")]))
+[ (string=? old-color-name "blue") "red"]))
+;[ (string=? old-color-name "blue") (stop-with "blue")]))
+
+(define (is-blue? color)
+  (string=? color "blue"))
 
 (big-bang "red"
 (check-with string?)
 (on-draw show-triangle)
-(on-tick next-color 2))
+(on-tick next-color 2)
+  (stop-when is-blue?))
 
 
