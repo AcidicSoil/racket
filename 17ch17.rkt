@@ -1,6 +1,12 @@
 (require picturing-programs)
 (require "ch15-pix.rkt")
-(require "ch.10_pix.rkt")
+(define box
+  (rectangle 80 210 "outline" "black"))
+
+(define WIDTH 70)
+(define HEIGHT 180)
+(define LIGHT-METRICS
+  (image-height green-light))
 
 (define green-light
   (circle 30 "solid" "green"))
@@ -26,14 +32,6 @@
   (cond [(string=? color "green") "yellow"]
         [(string=? color "yellow") "red"]
         [(string=? color "red") "green"]))
-
-(define box
-  (rectangle 80 210 "outline" "black"))
-
-(define WIDTH 70)
-(define HEIGHT 180)
-(define LIGHT-METRICS
-  (image-height green-light))
 
 (define green-light-pos
   (place-image/align green-light
@@ -214,5 +212,52 @@
 
 ;(number-worldv2 1)
 
+; A shape-color is one of the strings "red", "green", or "blue".
+
+#|(check-expect (function-on-shape-color "red") ...)
+(check-expect (function-on-shape-color "green") ...)
+(check-expect (function-on-shape-color "blue") ...)
+(define (function-on-shape-color c)
+(cond [(string=? c "red") ...]
+[(string=? c "green") ...]
+[(string=? c "blue") ...]
+))
+(check-expect (function-returning-shape-color ...) "red")
+(check-expect (function-returning-shape-color ...) "green")
+(check-expect (function-returning-shape-color ...) "blue")
+(define (function-returning-shape-color ...)
+(cond [... "red"]
+[... "green"]
+[... "blue"]
+))|#
+
+
+; draw handler show-triangle : shape-color -> image
+; tick handler next-color : shape-color -> shape-color
+; stop handler finished? : shape-color -> boolean
+
+
+(define (show-triangle color)
+  (cond [(string=? color "red") (triangle 10 "solid" "red")]
+        [(string=? color "green") (triangle 10 "solid" "green")]
+        [(string=? color "blue") (triangle 10 "solid" "blue")]
+       
+
+
+(check-expect (next-color "red") "green")
+(check-expect (next-color "green") "blue")
+(check-expect (next-color "blue") (stop-with "blue"))
+
+(define (next-color old-color-name)
+; old-color-name shape-color
+(cond [ (string=? old-color-name "red") "green" ]
+[ (string=? old-color-name "green") "blue" ]
+[ (string=? old-color-name "blue") (stop-with "blue") ]
+))
+
+(big-bang "red"
+(check-with string?)
+(on-draw show-triangle)
+(on-tick next-color 2))
 
 
