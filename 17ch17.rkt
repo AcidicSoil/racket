@@ -302,4 +302,20 @@
 (on-tick next-color 2)
   (stop-when is-blue?))
 
+; Digital clock that stops after 59
 
+(define (number->image num)
+  (text (number->string num) 18 "blue"))
+
+(define (show-number num)
+  (number->image num))
+
+(define (when-59? num)
+  (cond [(> num 59) (stop-with 59)]
+        [else 0]))
+
+(big-bang 0
+  (check-with number?)
+  (on-tick add1 1)
+  (on-draw show-number 200 200)
+  (stop-when when-59?))
