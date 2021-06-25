@@ -1,12 +1,8 @@
 (require picturing-programs)
 (require "ch15-pix.rkt")
+
 (define box
   (rectangle 80 210 "outline" "black"))
-
-(define WIDTH 70)
-(define HEIGHT 180)
-(define LIGHT-METRICS
-  (image-height green-light))
 
 (define green-light
   (circle 30 "solid" "green"))
@@ -16,6 +12,11 @@
 
 (define red-light 
   (circle 30 "solid" "red"))
+
+(define WIDTH 70)
+(define HEIGHT 180)
+(define LIGHT-METRICS
+  (image-height green-light))
 
 (define (light-color?v1 thing)
   (or(string=? thing "green")
@@ -240,7 +241,7 @@
 (define (show-triangle color)
   (cond [(string=? color "red") (triangle 10 "solid" "red")]
         [(string=? color "green") (triangle 10 "solid" "green")]
-        [(string=? color "blue") (triangle 10 "solid" "blue")]
+        [(string=? color "blue") (triangle 10 "solid" "blue")]))
        
 
 
@@ -252,8 +253,7 @@
 ; old-color-name shape-color
 (cond [ (string=? old-color-name "red") "green" ]
 [ (string=? old-color-name "green") "blue" ]
-[ (string=? old-color-name "blue") (stop-with "blue") ]
-))
+[ (string=? old-color-name "blue") (stop-with "blue")]))
 
 (big-bang "red"
 (check-with string?)
