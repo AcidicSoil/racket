@@ -1,5 +1,6 @@
 (require picturing-programs)
 (require "ch15-pix.rkt")
+(require "ch.10_pix.rkt")
 
 (define box
   (rectangle 80 210 "outline" "black"))
@@ -18,6 +19,21 @@
 (define LIGHT-METRICS
   (image-height green-light))
 
+(define green-light-pos
+  (place-image/align green-light
+                     (/ WIDTH 2) (- HEIGHT (/ LIGHT-METRICS 2)) "center" "center"
+                     box))
+
+(define yellow-light-pos
+  (place-image/align yellow-light
+                     (/ WIDTH 2) (- (- HEIGHT (/ LIGHT-METRICS 2)) (- LIGHT-METRICS 10)) "center" "center"
+                     box)) 
+
+(define red-light-pos
+  (place-image/align red-light
+                     (/ WIDTH 2) (- (- HEIGHT (/ LIGHT-METRICS 2)) (- (* 2 LIGHT-METRICS) 20)) "center" "center"
+                     box))
+
 (define (light-color?v1 thing)
   (or(string=? thing "green")
      (string=? thing "yellow")
@@ -34,37 +50,18 @@
         [(string=? color "yellow") "red"]
         [(string=? color "red") "green"]))
 
-(define green-light-pos
-  (place-image/align green-light
-                     (/ WIDTH 2) (- HEIGHT (/ LIGHT-METRICS 2)) "center" "center"
-                     box))
-
-(define yellow-light-pos
-  (place-image/align yellow-light
-                     (/ WIDTH 2) (- (- HEIGHT (/ LIGHT-METRICS 2)) (- LIGHT-METRICS 10)) "center" "center"
-                     box)) 
-
-(define red-light-pos
-  (place-image/align red-light
-                     (/ WIDTH 2) (- (- HEIGHT (/ LIGHT-METRICS 2)) (- (* 2 LIGHT-METRICS) 20)) "center" "center"
-                     box))
-
-(define (find-y color)
-  (- (image-height box)(/ (image-height green-light) 2)))
-
-
-
 (define (color-pos color)
   (cond [(string=? color "green") green-light-pos]
         [(string=? color "yellow") yellow-light-pos]
         [(string=? color "red") red-light-pos]))
 
 (define (string-world string)
-(big-bang string
-  (check-with light-color?v1)
-  (on-draw color-pos)
-  (on-tick change-light 5)))
-(string-world "green")
+  (big-bang string
+    (check-with light-color?v1)
+    (on-draw color-pos)
+    (on-tick change-light 5)))
+
+;(string-world "green")
 
 ; first version of slideshow with image as model
 "Examples of choose-picture:"
@@ -96,7 +93,9 @@
     (check-with image?)
     (on-draw show-picture)
     (on-tick change-picture 3)))
-(slide-show basketball)
+
+;(slide-show basketball)
+
 ; Second version of slideshow with numbers as a model
 
 ; choose-picture : string -> Image
@@ -287,35 +286,45 @@
 ;(check-expect (next-color "blue") (stop-with "blue"))
 
 (define (next-color old-color-name)
-; old-color-name shape-color
-(cond [ (string=? old-color-name "red") "green" ]
-[ (string=? old-color-name "green") "blue" ]
-[ (string=? old-color-name "blue") "red"]))
+  ; old-color-name shape-color
+  (cond [ (string=? old-color-name "red") "green" ]
+        [ (string=? old-color-name "green") "blue" ]
+        [ (string=? old-color-name "blue") "red"]))
 ;[ (string=? old-color-name "blue") (stop-with "blue")]))
 
 (define (is-blue? color)
   (string=? color "blue"))
 
-(big-bang "red"
-(check-with string?)
-(on-draw show-triangle)
-(on-tick next-color 2)
-  (stop-when is-blue?))
+(define (triangle-world string)
+  (big-bang string
+    (check-with string?)
+    (on-draw show-triangle)
+    (on-tick next-color 2)
+    (stop-when is-blue?))) 
+
+;(triangle-world "red")
 
 ; Digital clock that stops after 59
 
 (define (number->image num)
   (text (number->string num) 18 "blue"))
 
+(define (0-59? num)
+  (and (>= num 0)
+       (< num 59)))
+
+(define (change-number num)
+  (cond [(0-59? num) (add1 num)]
+        [(= num 59)  (add1 0)]
+        ))
+
 (define (show-number num)
   (number->image num))
 
-(define (when-59? num)
-  (cond [(> num 59) (stop-with 59)]
-        [else 0]))
+(define (num-world num)
+  (big-bang  num
+    (check-with number?)
+    (on-draw show-number 200 200)
+    (on-tick change-number)))
 
-(big-bang 0
-  (check-with number?)
-  (on-tick add1 1)
-  (on-draw show-number 200 200)
-  (stop-when when-59?))
+(num-world 0) 
