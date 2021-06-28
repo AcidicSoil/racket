@@ -17,10 +17,10 @@
 
 (define (main duration) 
   (big-bang (make-posn half-w half-h)
-            [to-draw show] 
-            [on-tick do-nothing 1 duration] 
-            [on-key move]
-            ))
+    [to-draw show] 
+    [on-tick do-nothing 1 duration] 
+    [on-key move]
+    ))
 
 ;; show: posn -> image
 ;; takes a posn structure and returns a scene with a 
@@ -39,16 +39,36 @@
 ;; If the key is "up" or "down", returns the new world state in
 ;; which the y coordinate of the position is shifted by delta 
 ;; in the direction of the arrow pressed. 
-;; If the key is anything else, returns the world state as is. 
-(define (move ws key-pressed) 
-  (cond 
-    [(key=? key-pressed "up") (make-posn (posn-x ws) (- (posn-y ws) delta))]
-    [(key=? key-pressed "down") (make-posn (posn-x ws) (+ (posn-y ws) delta))]
-    [(key=? key-pressed "left") (make-posn (- (posn-x ws) delta) (posn-y ws))]
-    [(key=? key-pressed "right") (make-posn (+ (posn-x ws) delta) (posn-y ws))]
-    [(key=? key-pressed "a") (make-posn (- (posn-x ws) delta)
-                                        (+ (posn-y ws) delta))]
-    [(key=? key-pressed "b") (make-posn (+ (posn-x ws) delta)
-                                        (- (posn-y ws) delta))]
+;; If the key is anything else, returns the world state as is.
+
+(define (helper-fun-up ws key-pressed)
+    (cond 
+    [(key=? key-pressed "up")
+     (cond [(> (posn-y ws) (- height height))  (make-posn (posn-x ws) (- (posn-y ws) delta))]
+           [else ws])]
+    [(key=? key-pressed "down")
+     (cond [(< (posn-y ws) height)(make-posn (posn-x ws) (+ (posn-y ws) delta))]
+           [else ws])]
+    [(key=? key-pressed "left")
+     (cond [(> (posn-x ws) (- width width)) (make-posn (- (posn-x ws) delta) (posn-y ws))]
+           [else ws])]
+    [(key=? key-pressed "right")
+     (cond [(< (posn-x ws) width) (make-posn (+ (posn-x ws) delta) (posn-y ws))]
+           [else ws])]
+    [(key=? key-pressed "a")
+     (cond [(and(< (posn-y ws)  height)
+                (> (posn-x ws) (- width width)))(make-posn (- (posn-x ws) delta)
+                                                           (+ (posn-y ws) delta))]
+           [else ws])]
+    [(key=? key-pressed "b")
+     (cond [(and(> (posn-y ws) (- height height))
+                (<  (posn-x ws)width))(make-posn (+ (posn-x ws) delta)                                                 (- (posn-y ws) delta))]
+           [else ws])]
     [(key=? key-pressed " ") (make-posn half-w half-h)]
+    [(key=? key-pressed "r") (make-posn (random width) (random height))]
     [else ws]))
+
+
+
+(define (move ws key-pressed)
+  (helper-fun-up ws key-pressed))
