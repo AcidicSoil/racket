@@ -1,0 +1,39 @@
+(require picturing-programs)
+
+
+
+;;
+(define width 200)
+(define height 200)
+(define half-w (/ width 2))
+(define half-h (/ height 2))
+(define blank (empty-scene width height))
+(define no-click-posn (make-posn -1 -1))
+;;
+(define (main duration) 
+  (big-bang (make-posn half-w half-h)
+            [to-draw show] 
+            [on-tick do-nothing 1 duration] 
+            [on-mouse record-click]
+            ))
+
+(define (show ws)
+  (place-image (posn->image ws)
+               half-w
+               half-h
+               blank))
+
+(define (do-nothing ws) 
+  ws)
+;;
+;;
+(define (record-click ws x y type)
+  (cond
+    [(mouse=? type "move") (make-posn x y)]
+    [(mouse=? type "button-up") (make-posn x y)]
+    [else ws]))
+;;
+;;
+(define (posn->image a-posn)
+  (cond [(> (posn-x a-posn)(posn-y a-posn)) (circle 5 "solid" "red")]
+        [else (circle 5 "solid" "green")]))
