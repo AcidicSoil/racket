@@ -18,13 +18,15 @@
 (define font-size (/ height 4))
 (define blank (empty-scene width height))
 (define no-click-posn (make-posn -1 -1))
+(define dot
+  (circle 10 "solid" "black"))
 
 (define (main duration)
   (big-bang no-click-posn
-            [to-draw show] 
-            [on-tick do-nothing 1 duration] 
-            [on-mouse record-click]
-            )) 
+    [to-draw show] 
+    [on-tick do-nothing 1 duration] 
+    [on-mouse record-click]
+    )) 
 
 ;; do-nothing: world state -> world state
 ;; takes the state of the world and returns it unchanged,
@@ -38,13 +40,12 @@
 ;; consumes a position and returns an image displaying
 ;; its coordinates
 (define (posn->image a-posn)
-  (text (string-append (number->string (posn-x a-posn))
-                       ", "
-                       (number->string (posn-y a-posn)))
-        font-size
-        "black"))
+  (place-image dot
+               (posn-x a-posn) 
+               (posn-y a-posn)
+  blank))
 
-(check-expect (posn->image (make-posn 20 70)) (text "20, 70" font-size "black"))
+
 
 ;; show: posn -> image
 ;; consumes a posn structure and returns a scene with a 
@@ -66,7 +67,7 @@
     [(mouse=? type "button-up") (make-posn x y)]
     [else ws]))
 
-
+(main 100)
 
 
 
