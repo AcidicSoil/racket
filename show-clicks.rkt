@@ -20,6 +20,10 @@
 (define no-click-posn (make-posn -1 -1))
 (define dot
   (circle 10 "solid" "black"))
+(define red-dot
+  (circle 10 "solid" "red"))
+(define green-dot
+  (circle 10 "solid" "green"))
 
 (define (main duration)
   (big-bang no-click-posn
@@ -40,12 +44,19 @@
 ;; consumes a position and returns an image displaying
 ;; its coordinates
 (define (posn->image a-posn)
-  (place-image dot
+  (cond [(> (posn-x a-posn)(posn-y a-posn)) (place-image red-dot
                (posn-x a-posn) 
                (posn-y a-posn)
-  blank))
+  blank)]
+        [else (place-image green-dot
+               (posn-x a-posn) 
+               (posn-y a-posn)
+  blank)]))
 
 
+;(define (posn->image a-posn)
+;  (cond [(> (posn-x a-posn)(posn-y a-posn)) (circle 5 "solid" "red")]
+;        [else (circle 5 "solid" "green")]))
 
 ;; show: posn -> image
 ;; consumes a posn structure and returns a scene with a 
