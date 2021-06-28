@@ -1,6 +1,8 @@
 (require picturing-programs)
 (require "ch15-pix.rkt")
 (require "ch.10_pix.rkt")
+(require "show-clicks.rkt")
+(require "modified-moving-dot.rkt")
 
 (define box
   (rectangle 80 210 "outline" "black"))
@@ -315,8 +317,7 @@
 
 (define (change-number num)
   (cond [(0-59? num) (add1 num)]
-        [(= num 59)  (add1 0)]
-        ))
+        [(= num 59)  (add1 0)]))
 
 (define (show-number num)
   (number->image num))
@@ -327,4 +328,31 @@
     (on-draw show-number 200 200)
     (on-tick change-number)))
 
-(num-world 0) 
+;(num-world 0)
+
+; dot at mouse location every click or move
+
+#|
+(define (DOT color)
+  (cond [(> x y) "red"]
+        [else "green"]))
+
+(define (
+
+(define (show-dot color)
+  (cond [(string=? color "red") 
+
+
+(define (place-dot color x y me)
+  (cond [(> x y)
+         (cond [(string=? color "red") (circle 5 "solid" "red")]
+               [else (circle 5 "solid" "green")])
+         
+  
+
+;(define (dot-world color)
+(big-bang color
+  (check-with string?)
+  (on-draw show-dot)
+  (on-tick add1)
+  (on-mouse place-dot))|#
