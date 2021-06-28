@@ -1,0 +1,41 @@
+;; example of a world program
+;; the world alternates between 0 and 1 on the screen
+;; on every clock tick
+
+; constants
+(define width 200)
+(define height 200)
+(define half-w (/ width 2))
+(define half-h (/ height 2))
+(define font-size (/ height 2))
+(define blank (empty-scene width height))
+
+;; a world has a state and functions 
+;; that change it on each clock tick 
+;; and convert it to a scene to display
+
+;; in the functions below we refer to the world state as ws
+
+(define (main duration)
+  (big-bang 0
+            [to-draw show] ;; indicates that the function 'show' will convert ws to a scene
+            [on-tick alternate 1 duration] ;; 'alternate' will be changing ws on every clock tick
+            ))
+
+
+;; show: integer number -> image
+;; converts an integer number that represents a world state 
+;; into a string on a scene
+(define (show ws)
+  (place-image (text (number->string ws) font-size "purple")
+               half-w
+               half-h
+               blank))
+
+;; alternate: number -> number
+;; takes an integer representing a world state; 
+;; if it's 0 then returns 1 otherwise returns 0
+(define (alternate ws)
+  (if (= ws 0) 1 0))
+               
+(main 10)
