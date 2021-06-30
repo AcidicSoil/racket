@@ -79,31 +79,3 @@
     [else ws]))
 
 (main 100)
-
-
-(define (choose-color number)
-  (cond [(= number 1) "red"]
-        [(= number 2) "blue"]
-        [(= number 3) "green"]))
-
-
-; Random dots
-(define DOT
-  (circle 4 "solid" "black"))
-
-(define blank-screen
-  (rectangle 200 200 "solid" "white"))
- 
-(define (next-dot x)
-  (overlay/xy  x
-                (random 200) (random 200)
-               DOT))
-
-(define (old-dot x)
-  (overlay/xy x
-              (random 200)  (random 200)
-              blank-screen))
-
-(big-bang DOT
-  (on-tick next-dot 1/2)
-  (on-draw old-dot 200 200))
