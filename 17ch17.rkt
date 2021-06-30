@@ -1,8 +1,7 @@
 (require picturing-programs)
 (require "ch15-pix.rkt")
 (require "ch.10_pix.rkt")
-(require "show-clicks.rkt")
-(require "modified-moving-dot.rkt")
+
 
 (define box
   (rectangle 80 210 "outline" "black"))
@@ -330,29 +329,36 @@
 
 ;(num-world 0)
 
-; dot at mouse location every click or move
+;;
+;;
+; Random dots
 
-#|
-(define (DOT color)
-  (cond [(> x y) "red"]
-        [else "green"]))
+(define (random-color number)
+  (cond [(= number 1) "red"]
+        [(= number 2) "blue"]
+        [(= number 3) "green"]))
 
-(define (
+(define (color-at-random number)
+  (random-color (+ (random 3) 1)))
 
-(define (show-dot color)
-  (cond [(string=? color "red") 
+(define (dot number) 
+  (circle 4 "solid" (color-at-random number)))
+
+(define blank
+  (rectangle 200 200 "solid" "white"))
+                                
+(define (next-dot x)
+  (overlay/xy  x
+                (random 200) (random 200)
+               (dot x)))
+
+(define (old-dot x)
+  (overlay/xy x
+              (random 200)  (random 200)
+              blank))
+
+(big-bang (dot 3)
+  (on-tick next-dot 1/2)
+  (on-draw old-dot 200 200))
 
 
-(define (place-dot color x y me)
-  (cond [(> x y)
-         (cond [(string=? color "red") (circle 5 "solid" "red")]
-               [else (circle 5 "solid" "green")])
-         
-  
-
-;(define (dot-world color)
-(big-bang color
-  (check-with string?)
-  (on-draw show-dot)
-  (on-tick add1)
-  (on-mouse place-dot))|#
