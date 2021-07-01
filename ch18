@@ -1,0 +1,49 @@
+(require picturing-programs)
+; add-dot-on-mouse-down :
+; image(old) number(x) number(y) string(event-type) -> image(new)
+
+#|
+(check-expect (function-on-mouse-press "button-down") ...)
+(check-expect (function-on-mouse-press "button-up") ...)
+(define (function-on-mouse-press event-type)
+(cond [(string=? event-type "button-down") ...]
+[else ...]
+))
+|#
+
+(define WIDTH 300)
+(define HEIGHT 200)
+(define BACKGROUND (empty-scene WIDTH HEIGHT))
+(define DOT (circle 3 "solid" "green"))
+(define red-dot (circle 3 "solid" "red"))
+(check-expect (add-dot-on-mouse-down BACKGROUND 35 10 "button-down")
+(place-image DOT 35 10 BACKGROUND))
+(check-expect (add-dot-on-mouse-down BACKGROUND 35 10 "move")
+BACKGROUND)
+
+(define OTHER-BACKGROUND
+(ellipse 50 30 "solid" "red"))
+(check-expect (add-dot-on-mouse-down OTHER-BACKGROUND 35 10 "button-down")
+(place-image DOT 35 10 OTHER-BACKGROUND))
+(check-expect (add-dot-on-mouse-down OTHER-BACKGROUND 35 10 "button-up")
+OTHER-BACKGROUND)
+
+
+(define (add-dot-on-mouse-down old x y event-type)
+; old an image
+; x a number (the x coordinate)
+; y a number (the y coordinate)
+; event-type a string (either "button-down" or not)
+; DOT a fixed image we’ll need
+(cond [ (string=? event-type "button-down")
+(place-image DOT x y old) ]
+[ else old ]
+)
+)
+
+
+
+  (big-bang BACKGROUND
+(check-with image?)
+(on-draw show-it)
+(on-mouse add-dot-on-mouse-down))
