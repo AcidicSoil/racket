@@ -16,34 +16,27 @@
 (define BACKGROUND (empty-scene WIDTH HEIGHT))
 (define DOT (circle 3 "solid" "green"))
 (define red-dot (circle 3 "solid" "red"))
-(check-expect (add-dot-on-mouse-down BACKGROUND 35 10 "button-down")
-(place-image DOT 35 10 BACKGROUND))
-(check-expect (add-dot-on-mouse-down BACKGROUND 35 10 "move")
-BACKGROUND)
+
 
 (define OTHER-BACKGROUND
-(ellipse 50 30 "solid" "red"))
-(check-expect (add-dot-on-mouse-down OTHER-BACKGROUND 35 10 "button-down")
-(place-image DOT 35 10 OTHER-BACKGROUND))
-(check-expect (add-dot-on-mouse-down OTHER-BACKGROUND 35 10 "button-up")
-OTHER-BACKGROUND)
+  (ellipse 50 30 "solid" "red"))
+
 
 
 (define (add-dot-on-mouse-down old x y event-type)
-; old an image
-; x a number (the x coordinate)
-; y a number (the y coordinate)
-; event-type a string (either "button-down" or not)
-; DOT a fixed image we’ll need
-(cond [ (string=? event-type "button-down")
-(place-image DOT x y old) ]
-[ else old ]
-)
-)
+  ; old an image
+  ; x a number (the x coordinate)
+  ; y a number (the y coordinate)
+  ; event-type a string (either "button-down" or not)
+  ; DOT a fixed image we’ll need
+  (cond 
+    [ (string=? event-type "button-down")
+      (place-image DOT x y old)]
+      [(string=? event-type "button-up") (place-image red-dot x y old)]
+      [else old]))
 
 
-
-  (big-bang BACKGROUND
-(check-with image?)
-(on-draw show-it)
-(on-mouse add-dot-on-mouse-down))
+(big-bang BACKGROUND
+  (check-with image?)
+  (on-draw show-it)
+  (on-mouse add-dot-on-mouse-down))
