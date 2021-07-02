@@ -16,11 +16,17 @@
 (define BACKGROUND (empty-scene WIDTH HEIGHT))
 (define DOT (circle 3 "solid" "green"))
 (define red-dot (circle 3 "solid" "red"))
-
+(check-expect (add-dot-on-mouse-down BACKGROUND 35 10 "button-down")
+              (place-image DOT 35 10 BACKGROUND))
+(check-expect (add-dot-on-mouse-down BACKGROUND 35 10 "move")
+              BACKGROUND)
 
 (define OTHER-BACKGROUND
   (ellipse 50 30 "solid" "red"))
-
+(check-expect (add-dot-on-mouse-down OTHER-BACKGROUND 35 10 "button-down")
+              (place-image DOT 35 10 OTHER-BACKGROUND))
+(check-expect (add-dot-on-mouse-down OTHER-BACKGROUND 35 10 "button-up")
+              OTHER-BACKGROUND)
 
 
 (define (add-dot-on-mouse-down old x y event-type)
@@ -29,14 +35,47 @@
   ; y a number (the y coordinate)
   ; event-type a string (either "button-down" or not)
   ; DOT a fixed image we’ll need
-  (cond 
-    [ (string=? event-type "button-down")
-      (place-image DOT x y old)]
-      [(string=? event-type "button-up") (place-image red-dot x y old)]
-      [else old]))
+  (cond [ (string=? event-type "button-down")
+          (place-image DOT x y old) ]
+        [ else old ]
+        )
+  )
 
+ 
 
-(big-bang BACKGROUND
+#|(big-bang BACKGROUND
   (check-with image?)
   (on-draw show-it)
-  (on-mouse add-dot-on-mouse-down))
+  (on-mouse add-dot-on-mouse-down))|#
+
+
+(define (stop-on-q? key)
+  (string=? key "q"))
+
+; handle-key : number(x) key-event -> number(new x)
+(check-expect (handle-key 10 "D") 10)
+(check-expect (handle-key 10 "left") 9)
+(check-expect (handle-key 10 "right") 11)
+(define (handle-key x key)
+  ; x number
+  ; key key-event (i.e. string)
+  ; "left" a fixed string we’ll need
+  ; "right" another fixed string we’ll need
+  (cond [ (key=? key "right") (+ x 1) ]
+        [ (key=? key "left") (- x 1) ]
+        [ (key=? key "p") (+ x 5)]
+        [ (key=? key "o") (- x 5)]
+        [ else (stop-with "q") ]))
+
+
+(define (calendar-at-x x)
+  (place-image
+   pic:calendar
+   x 50
+   (rectangle 200 200 "solid" "white")))
+
+(big-bang (/ WIDTH 2)
+  ;(check-with number?)
+  (on-draw calendar-at-x)
+  (on-release handle-key)
+   )
