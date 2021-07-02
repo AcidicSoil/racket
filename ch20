@@ -1,0 +1,39 @@
+(require picturing-programs)
+
+; make-posn : number(x) number(y) -> posn
+; posn-x : posn -> number(x)
+; posn-y : posn -> number(y)
+; posn? : anything -> boolean
+
+(define where (make-posn 7 12))
+where ; (make-posn 7 12)
+
+(posn-x where) ; should be 7
+(posn-y where) ; should be 12
+
+
+#|
+(define where (make-posn 7 12))
+(check-expect (function-on-posn where) ...)
+(check-expect (function-on-posn (make-posn 19 5)) ...)
+(define (function-on-posn the-posn)
+; the-posn a posn
+; (posn-x the-posn) a number (the x coordinate)
+; (posn-y the-posn) another number (the y coordinate)
+...)
+|#
+
+
+; right-of-100? : posn -> boolean
+
+(check-expect (right-of-100? (make-posn 75 123)) false)
+(check-expect (right-of-100? (make-posn 102 123)) true)
+(check-expect (right-of-100? (make-posn 100 123)) false)
+; borderline case
+
+(define (right-of-100? the-posn)
+; the-posn a posn
+; (posn-x the-posn) a number (the x coordinate)
+; (posn-y the-posn) another number (the y coordinate)
+; 100 a fixed number we’ll need
+(> (posn-x the-posn) 100))
