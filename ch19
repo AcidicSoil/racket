@@ -1,0 +1,82 @@
+(require picturing-programs)
+(require "ch9.rkt")
+(require "ch.11.rkt")
+(require "ch.15v3.rkt")
+
+#|; house-building functions
+(define DOOR-HEIGHT 20)
+(define DOOR-WIDTH 10) 
+
+(define door (rectangle DOOR-WIDTH DOOR-HEIGHT "solid" "brown"))
+
+; build-roof : number(side-length) string(color) -> Image
+(define (build-roof width color)
+  (triangle width "outline" color))
+
+; build-base : number(height) number(width) string(color) -> Image
+(define (build-base width height color)
+  (rectangle width height "outline" color))
+
+; build-house : number(width) number(height) string(color) -> Image
+(define (build-house width height color)
+  (cond [(<= width 0)
+         (error 'build-house " House width must be > 0.")]
+        [(<= height 0)
+         (error 'build-house " House height must be > 0.")]
+        [else
+  (above (build-roof width color)
+         (overlay/align "center" "bottom" door (build-base width height color)))]))
+
+(build-house 0 100 "blue") "should produce an error message:"
+"build-house: House width must be > 0."
+ (build-house 100 0 "red") "should produce an error message:"
+"build-house: House height must be > 0."
+(check-error (build-house 0 100 "blue")
+"build-house: House width must be > 0.")
+
+(check-error (build-house 100 0 "red")
+"build-house: House height must be > 0.")
+
+(check-error (error ’whatever "this error message")
+"that error message")
+
+(check-error (+ 3 4) "something went wrong")|#
+
+(define (reply greeting)
+  ; greeting a string
+  (cond [(not (string=? greeting "good morning"))
+         (error 'reply " expected one of the known greetings")]
+        [(string=? greeting "good morning") "I need coffee"]
+        [(not (string=? greeting "good afternoon"))
+         (error 'reply " expected one of the known greetings")]
+        [(string=? greeting "good afternoon") "I need a nap"]
+        [(not (string=? greeting "good night"))
+         (error 'reply " expected one of the known greetings")] 
+        [(string=? greeting "good night") "bedtime!"]
+        ;[else "huh?"];true can work in place of else [true "huh?"]
+        ))
+
+(define (chop-first-char str)
+  (cond [(= (string-length str) 0 )
+         (error 'chop-first-char "can't chop from an empty string")]
+        [else
+         (substring str 0 (string-length str))]))
+
+(chop-first-char "dog")
+
+(define (first-char str)
+  (cond [(= (string-length str) 0 )
+         (error 'first-char "can't get first character of an empty string")]
+        [else
+         (substring str 0)]))
+
+(define (safe-double number)
+  (cond [(string? number)
+         (error 'safe-double (string-append "this function expects a number, like 3; you gave it the quoted string " number)) ]
+         [(boolean? number)
+         (error 'safe-double "this function expects a number, like 3; you gave it a boolean expression")]
+         [(image? number)
+         (error 'safe-double "this function expects a number, like 3; you gave it an image")]
+         [else
+          (* number number)]))
+         
