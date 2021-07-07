@@ -207,17 +207,16 @@ where ; (make-posn 7 12)
 ;;
 ;;
 
-;(define DOT
-;  (circle 4 "solid" "black"))
-
 (define blank-screen
   (rectangle 200 200 "solid" "white"))
  
 (define (next-dot where)
   (add-posns where
-             (cond [(and (<= (posn-x where) WIDTH)
+             (cond [(and (>= (posn-x where) 0)
+                         (>= (posn-y where) 0)
+                         (<= (posn-x where) WIDTH)
                          (<= (posn-y where) HEIGHT))
-                    (make-posn (random HEIGHT) (random HEIGHT))]
+                    (make-posn (random WIDTH) (random HEIGHT))]
                    [else where])))
                     
 
@@ -226,11 +225,35 @@ where ; (make-posn 7 12)
                (random 200)  (random 200)
                blank-screen))
 
+(big-bang (make-posn (random 200) (random 200))
+  (check-with posn?)
+  (on-tick next-dot 1)
+  (on-draw old-dot 200 200))
+
+;(define DOT
+;  (circle 4 "solid" "black"))
+
+#|(define blank-screen
+  (rectangle 200 200 "solid" "white"))
+ 
+(define (next-dot where)
+  (add-posns where
+             (cond [(and (<= (posn-x where) WIDTH)
+                         (<= (posn-y where) HEIGHT))
+                    (make-posn (random WIDTH) (random HEIGHT))]
+                   [else where])))
+                    
+
+(define (old-dot where)
+  (place-image DOT
+               (random 200)  (random 200)
+               blank-screen))|#
+
 (define win-text (text "Congratulations!" 18 "green"))
 
 (define (mouseclick->posn a-posn x y me)
   (cond [(string=? me "button-down")
-         (cond [(equal? (make-posn x y) a-posn) (stop-with a-posn)]
+         (cond [(> (distance-formula x y) 3) (stop-with a-posn)]
                [else a-posn])]
         [else a-posn]))
 
@@ -241,7 +264,7 @@ where ; (make-posn 7 12)
 
 #|(define (win-game? a-posn x y me)
   (cond [(= mouse-click->posn a-posn) (stop-with a-posn)]
-        [else a-posn]))|#
+        [else a-posn]))
 
 
 
@@ -250,5 +273,5 @@ where ; (make-posn 7 12)
   (check-with posn?)
   (on-tick next-dot 1)
   (on-draw old-dot 200 200)
-  (on-mouse mouseclick->posn))
+  (on-mouse mouseclick->posn))|#
 
