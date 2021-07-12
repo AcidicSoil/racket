@@ -274,4 +274,57 @@
                                                              " and "
                                                              (candidate-name cand2) " tied in votes!")]))
 
+(check-expect
+ (change-salary (make-employee "Joe" 352 65000) 66000)
+ (make-employee "Joe" 352 66000))
+(check-expect
+ (change-salary (make-employee "Croesus" 2 197000) 1.49)
+ (make-employee "Croesus" 2 1.49))
+(define (change-salary emp new-salary)
+  ; emp employee (make-employee "Joe" 352 65000)
+  ; (employee-name emp) string "Joe"
+  ; (employee-id emp) number 352
+  ; (employee-salary emp) number 65000
+  ; new-salary number 66000
+  ; right answer employee (make-employee "Joe" 352 66000)
+  (make-employee (employee-name emp)
+                 (employee-id emp)
+                 new-salary))
 
+(check-expect (change-jersey (make-basketball-player "Michael Jordan" "Chicago Bulls" 21) 1)
+              (make-basketball-player "Michael Jordan" "Chicago Bulls" 1))
+
+(define (change-jersey bb-player new-jersey-number)
+  (make-basketball-player (basketball-player-name bb-player)
+                          (basketball-player-team bb-player)
+                          new-jersey-number))
+
+(check-expect (birthday (make-person "Amour" "anon" 23)) (make-person "Amour" "anon" 24))
+(define (birthday person)
+  (make-person (person-first person)
+               (person-last person)
+               (+ 1 (person-age person))))
+
+(check-expect (change-name-to-match (make-person "Amour" "anon" 23) (make-person "Clayton" "Bivens" 30))
+              (make-person "Amour" "Bivens" 23))
+(define (change-name-to-match person1 person2)
+  (make-person (person-first person1)
+               (person-last person2)
+               (person-age person1)))
+
+(check-expect (raise-salary-percent (make-employee "Bob" 123 50000) 5) (make-employee "Bob" 123 52500))
+(define (raise-salary-percent emp number)
+  (make-employee (employee-name emp)
+                 (employee-id emp)
+                 (+ (employee-salary emp)
+                    (* (* .01 number) (employee-salary emp)))))
+
+(check-expect (add-a-vote (make-candidate "Clayton" 20)) (make-candidate "Clayton" 21))
+(define (add-a-vote candidate)
+  (make-candidate (candidate-name candidate)
+                  (+ 1 (candidate-votes candidate))))
+
+(check-expect (swap-length-width (make-rect 20 10)) (make-rect 10 20))
+(define (swap-length-width rect)
+  (make-rect (rect-length rect)
+             (rect-width rect)))
