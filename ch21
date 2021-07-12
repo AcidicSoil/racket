@@ -1,0 +1,277 @@
+(require picturing-programs)
+
+
+; make-struct-name : n objects -> struct-name
+; struct-name -field-name-1 : struct-name -> object
+; ...
+; struct-name -field-name-n : struct-name -> object
+; struct-name ? : object -> boolean
+
+;(define-struct posn (x y))
+
+; make-posn : object(x) object(y) -> posn
+; posn-x : posn -> object
+; posn-y : posn -> object
+; posn? : object -> boolean
+
+;;;;
+(define-struct person (first last age))
+; make-person : string(first) string(last) number(age) -> person
+; person-first : person -> string
+; person-last : person -> string
+; person-age : person -> number
+; person? : object -> boolean
+(make-person "Joe" "Schmoe" 19)
+(define author (make-person "Stephen" "Bloch" 46))
+(person-first author)
+(person-last author)
+(define lambda-guy (make-person "Alonzo" "Church" 107))
+(person-last lambda-guy)
+(person-first lambda-guy)
+(person-first (make-person "Joe" "Schmoe" 19))
+(person-age lambda-guy)
+(person? author)
+(person? "Bloch")
+(person? (make-person "Joe" "Schmoe" 19))
+;;;;;
+
+(define-struct employee (name id salary))
+
+; make-employee:
+; string(name) number(id) number(salary) -> employee
+; employee-name: employee -> string
+; employee-id: employee -> number
+; employee-salary: employee -> number
+; employee?: object -> boolean
+
+(make-employee "Joe" 348 42995)
+(make-employee "Mary" 214 49500)
+(define emp1 (make-employee "Bob" 470 36000))
+(define emp2 (make-employee "Chris" 471 41000))
+(check-expect (employee-name emp1) "Bob")
+(check-expect (employee-id emp2) 471)
+(check-expect (employee-salary emp2) 41000)
+(check-expect (employee-salary (make-employee "Mary" 214 49500))49500)
+(check-expect (employee? emp1) true)
+(check-expect (employee? "Mary") false)
+
+#|
+(check-expect (function-on-employee emp1) ...)
+(check-expect (function-on-employee
+(make-employee "Joe" 348 42995))
+...)
+(define (function-on-employee emp)
+; emp an employee
+; (employee-name emp) a string
+; (employee-id emp) a number
+; (employee-salary emp) a number
+...)
+|#
+#|
+(check-expect (function-returning-employee ...) emp1)
+(check-expect (function-returning-employee ...)
+(make-employee "Joe" 348 42995))
+(define (function-returning-employee ...)
+(make-employee ... ... ...) ; name, id, salary
+)
+|#
+
+(define-struct my-posn (x y))
+
+(define WIDTH 300)
+(define HEIGHT 300)
+(define BACKGROUND (empty-scene WIDTH HEIGHT))
+(define DOT (circle 3 "solid" "blue"))
+
+(check-expect (show-picture (make-my-posn 15 12))
+              (place-image DOT 15 12 BACKGROUND))
+(check-expect (show-picture (make-my-posn 27 149))
+              (place-image DOT 27 149 BACKGROUND))
+
+(define (show-picture where)
+  ; where a posn (make-my-posn 27 149)
+  ; (my-posn-x where) a number(x) 27
+  ; (my-posn-y where) a number(y) 149
+  ; DOT a fixed image (to be placed)
+  ; BACKGROUND a fixed image (to use as background)
+  ; right answer an image (place-image DOT 27 149 BACKGROUND)
+  (place-image DOT
+               (my-posn-x where) (my-posn-y where)
+               BACKGROUND))
+
+(check-expect (add-posns (make-my-posn 3 5) (make-my-posn 2 7)) (make-my-posn 5 12))
+(define (add-posns posn-1 posn-2)
+  (make-my-posn (+ (my-posn-x posn-1)(my-posn-x posn-2)) (+ (my-posn-y posn-1) (my-posn-y posn-2))))
+
+(define (handle-key where key)
+  ; where a posn (make-my-posn 12 19)
+  ; key string
+  ; (my-posn-x where) a number(x) 12
+  ; (my-posn-y where) a number(y) 19
+  #|  (cond [ (key=? key "up") ; right answer (make-my-posn 12 18)
+          (add-posns where (make-my-posn 0 -1))]
+        [ (key=? key "down") ; right answer (make-my-posn 12 20)
+          (add-posns where (make-my-posn 0 1))]
+        [ (key=? key "left") ; right answer (make-my-posn 11 19)
+          (add-posns where (make-my-posn -1 0))]
+        [ (key=? key "right") ; right answer (make-my-posn 13 19)
+          (add-posns where (make-my-posn 1 0))]
+        [ else where ]))|#
+  (add-posns where
+             (cond [(key=? key "up")
+                    (make-my-posn 0 -1)]
+                   [(key=? key "down") 
+                    (make-my-posn 0 1)]
+                   [(key=? key "left") 
+                    (make-my-posn -1 0)]
+                   [(key=? key "right")
+                    (make-my-posn 1 0)]
+                   [else where ])))
+
+(make-my-posn 1 2)
+#|(big-bang (make-my-posn (/ WIDTH 2) (/ HEIGHT 2))
+  (check-with my-posn?)
+  (on-draw show-picture)
+  (on-key handle-key))|#
+     
+(define-struct cd (title performer year tracks))
+
+(make-cd "green-day" "canadian" 2012 12)
+(define green-day (make-cd "American Idiot" "Green day" 2012 15))
+
+(define-struct candidate (name votes))
+(define clayton (make-candidate "clayton" 20))
+
+(define-struct course (name instructor room time))
+(define english-composition (make-course "English Composition" "Linda" 121 "12:30"))
+
+(define-struct basketball-player (name team number))
+(define michael-jordan (make-basketball-player "Michael Jordan" "Chicago Bulls" 21 ))
+
+(define-struct hily-viewer(name gender country age))
+(define tina (make-hily-viewer "Tina" "female" "Portugal" 36))
+(define meriam (make-hily-viewer "meriam" "female" "Saudia Arabia" 35))
+(define luna (make-hily-viewer "luna" "female" "florida" 21))
+
+(define-struct dog (name age weight color))
+(define cricket (make-dog "cricket" 5 10 "red"))
+
+(define-struct rect (width length))
+(define test-rect (make-rect 10 5))
+
+(define-struct time (hours minutes seconds))
+(define current-time (make-time 3 59 33))
+(define clock-time
+  (string-append (number->string(time-hours current-time ))":"
+                 (number->string(time-minutes current-time)) ":"
+                 (number->string(time-seconds current-time)) "am"))
+
+(check-expect(earns-over-100k? (make-employee "Phil" 27 119999)) true)
+(check-expect(earns-over-100k? (make-employee "Anne" 51 100000))false) ; (borderline case)
+(check-expect (earns-over-100k? emp1) false)
+; assuming the definition of emp1 from before
+
+(define (earns-over-100k? emp)
+  ; emp employee
+  ; (employee-name emp) string
+  ; (employee-id emp) number
+  ; (employee-salary emp) number
+  ; 100000 fixed number
+  (> (employee-salary emp) 100000))
+;;;;
+
+
+(define adtr (make-cd "homesick" "adtr" 2012 15))
+
+(check-expect(rec-before-1980? (make-cd "homesick" "adtr" 2012 15))false)
+(define (rec-before-1980? cd)
+  ; cd cd
+  ; (cd-year cd) number
+  (< (cd-year cd) 1980))
+
+(check-expect(older? (make-person "clayton" "bivens" 30) (make-person "amour" "?" 23)) true)
+(define (older? person1 person2)
+  (> (person-age person1) (person-age person2)))
+
+
+(check-expect(person=? (make-person "clayton" "bivens" 30) (make-person "amour" "?" 23)) false)
+(define (person=? person1 person2)
+  (cond [(and (string=? (person-first person1) (person-first person2))
+              (string=? (person-last person1) (person-last person2))
+              (= (person-age person1) (person-age person2))) true]
+        [else false]))
+
+
+(check-expect(same-team? (make-basketball-player "joe shmoe" "rockets" 1)
+                         (make-basketball-player "jane doe" "lakers" 3))false)  
+(define (same-team? bb-player1 bb-player2)
+  (cond [(string=? (basketball-player-team bb-player1)(basketball-player-team bb-player2))true]
+        [else false]))
+
+(check-expect (full-name (make-person "john" "doe" 25)) "john doe")
+(define (full-name person)
+  (string-append (person-first person) " " (person-last person)))
+
+(check-expect (rect-area (make-rect 10 10)) 100)
+(define (rect-area rect)
+  (* (rect-width rect) (rect-length rect)))
+
+(check-expect (larger-rect? (make-rect 10 10) (make-rect 9 9))true)
+(define (larger-rect? rect1 rect2)
+  (> (rect-area rect1)(rect-area rect2)))
+
+(define midnight (make-time 12 0 0))
+(check-expect (seconds-since-midnight (make-time 0 0 30))30)
+(define (seconds-since-midnight time) 
+  (+ (time-seconds time) (time-seconds midnight)))
+
+(define (minutes->seconds minutes)
+  (* (time-minutes minutes) 60))
+(define (hours->minutes hours)
+  (* (time-hours hours) 60))
+(define (hours->seconds hours)
+  (* (* (time-hours hours) 60) 60))
+
+(define (seconds-calc time)
+  (+ (hours->seconds time) (minutes->seconds time) (time-seconds time)))
+
+(define (seconds-time-difference time1 time2)
+  (- (seconds-calc time1) (seconds-calc time2)))
+
+(check-expect (seconds-between (make-time 3 30 0) (make-time 1 0 0)) 9000)
+(check-expect (seconds-between (make-time 3 0 0) (make-time 0 30 0)) 9000)
+(define (seconds-between time1 time2)
+  (cond [(and(time? time1) 
+             (time? time2))(seconds-time-difference time1 time2)]
+        [else (error 'seconds-between " expected a time construct")]))
+
+(check-expect (who-won
+               (make-candidate "clayton" 20)
+               (make-candidate "amour" 21)
+               (make-candidate "pooh bear" 22)) "pooh bear")
+(check-expect (who-won
+               (make-candidate "clayton" 20)
+               (make-candidate "amour" 21)
+               (make-candidate "pooh bear" 20)) "clayton and pooh bear tied in votes!")
+(define (who-won cand1 cand2 cand3)
+  (cond [(> (candidate-votes cand1)(candidate-votes cand2) (candidate-votes cand3)) (candidate-name cand1)]
+        [(> (candidate-votes cand2)(candidate-votes cand1) (candidate-votes cand3)) (candidate-name cand2)]
+        [(> (candidate-votes cand3)(candidate-votes cand2) (candidate-votes cand1)) (candidate-name cand3)]
+        [(= (candidate-votes cand1)(candidate-votes cand2)) (string-append
+                                                             (candidate-name cand1)
+                                                             " and "
+                                                             (candidate-name cand2) " tied in votes!")]
+        [(= (candidate-votes cand1)(candidate-votes cand3)) (string-append
+                                                             (candidate-name cand1)
+                                                             " and "
+                                                             (candidate-name cand3) " tied in votes!")]
+        [(= (candidate-votes cand3)(candidate-votes cand1)) (string-append
+                                                             (candidate-name cand3)
+                                                             " and "
+                                                             (candidate-name cand1) " tied in votes!")]
+        [(= (candidate-votes cand3)(candidate-votes cand2)) (string-append
+                                                             (candidate-name cand3)
+                                                             " and "
+                                                             (candidate-name cand2) " tied in votes!")]))
+
+
