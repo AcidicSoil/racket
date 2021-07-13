@@ -348,9 +348,11 @@
              "handle-tick: Direction is neither left nor right!")
 
 (define (handle-tick current)
-  (cond [(string=? (moving-x-dir current) "left")
+  (cond [(and (string=? (moving-x-dir current) "left")
+              (> (moving-x-x current) 0))
          (make-moving-x (- (moving-x-x current) SPEED) "left")]
-        [(string=? (moving-x-dir current) "right")
+        [(and (string=? (moving-x-dir current) "right")
+              (< (moving-x-x current) WIDTH))
          (make-moving-x (+ (moving-x-x current) SPEED) "right")]
         [else (error 'handle-tick "Direction is neither left nor right!")]))
 
@@ -372,3 +374,4 @@
 (on-tick handle-tick 1)
 (on-key handle-key))
 
+ 
