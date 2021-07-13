@@ -89,12 +89,6 @@
               (place-image DOT 27 149 BACKGROUND))
 
 (define (show-picture where)
-  ; where a posn (make-my-posn 27 149)
-  ; (my-posn-x where) a number(x) 27
-  ; (my-posn-y where) a number(y) 149
-  ; DOT a fixed image (to be placed)
-  ; BACKGROUND a fixed image (to use as background)
-  ; right answer an image (place-image DOT 27 149 BACKGROUND)
   (place-image DOT
                (my-posn-x where) (my-posn-y where)
                BACKGROUND))
@@ -103,7 +97,7 @@
 (define (add-posns posn-1 posn-2)
   (make-my-posn (+ (my-posn-x posn-1)(my-posn-x posn-2)) (+ (my-posn-y posn-1) (my-posn-y posn-2))))
 
-(define (handle-key where key)
+#|(define (handle-key where key)
   ; where a posn (make-my-posn 12 19)
   ; key string
   ; (my-posn-x where) a number(x) 12
@@ -129,7 +123,7 @@
                    [else where ])))
 
 (make-my-posn 1 2)
-#|(big-bang (make-my-posn (/ WIDTH 2) (/ HEIGHT 2))
+(big-bang (make-my-posn (/ WIDTH 2) (/ HEIGHT 2))
   (check-with my-posn?)
   (on-draw show-picture)
   (on-key handle-key))|#
@@ -201,17 +195,17 @@
               (= (person-age person1) (person-age person2))) true]
         [else false]))
 
-
+;;
 (check-expect(same-team? (make-basketball-player "joe shmoe" "rockets" 1)
                          (make-basketball-player "jane doe" "lakers" 3))false)  
 (define (same-team? bb-player1 bb-player2)
   (cond [(string=? (basketball-player-team bb-player1)(basketball-player-team bb-player2))true]
         [else false]))
-
+;;
 (check-expect (full-name (make-person "john" "doe" 25)) "john doe")
 (define (full-name person)
   (string-append (person-first person) " " (person-last person)))
-
+;;
 (check-expect (rect-area (make-rect 10 10)) 100)
 (define (rect-area rect)
   (* (rect-width rect) (rect-length rect)))
@@ -219,7 +213,7 @@
 (check-expect (larger-rect? (make-rect 10 10) (make-rect 9 9))true)
 (define (larger-rect? rect1 rect2)
   (> (rect-area rect1)(rect-area rect2)))
-
+;;
 (define midnight (make-time 12 0 0))
 (check-expect (seconds-since-midnight (make-time 0 0 30))30)
 (define (seconds-since-midnight time) 
@@ -244,7 +238,7 @@
   (cond [(and(time? time1) 
              (time? time2))(seconds-time-difference time1 time2)]
         [else (error 'seconds-between " expected a time construct")]))
-
+;;
 (check-expect (who-won
                (make-candidate "clayton" 20)
                (make-candidate "amour" 21)
@@ -273,24 +267,16 @@
                                                              (candidate-name cand3)
                                                              " and "
                                                              (candidate-name cand2) " tied in votes!")]))
-
-(check-expect
- (change-salary (make-employee "Joe" 352 65000) 66000)
- (make-employee "Joe" 352 66000))
-(check-expect
- (change-salary (make-employee "Croesus" 2 197000) 1.49)
- (make-employee "Croesus" 2 1.49))
+;;
+(check-expect(change-salary (make-employee "Joe" 352 65000) 66000)
+             (make-employee "Joe" 352 66000))
+(check-expect(change-salary (make-employee "Croesus" 2 197000) 1.49)
+             (make-employee "Croesus" 2 1.49))
 (define (change-salary emp new-salary)
-  ; emp employee (make-employee "Joe" 352 65000)
-  ; (employee-name emp) string "Joe"
-  ; (employee-id emp) number 352
-  ; (employee-salary emp) number 65000
-  ; new-salary number 66000
-  ; right answer employee (make-employee "Joe" 352 66000)
   (make-employee (employee-name emp)
                  (employee-id emp)
                  new-salary))
-
+;;
 (check-expect (change-jersey (make-basketball-player "Michael Jordan" "Chicago Bulls" 21) 1)
               (make-basketball-player "Michael Jordan" "Chicago Bulls" 1))
 
@@ -298,33 +284,91 @@
   (make-basketball-player (basketball-player-name bb-player)
                           (basketball-player-team bb-player)
                           new-jersey-number))
-
+;;
 (check-expect (birthday (make-person "Amour" "anon" 23)) (make-person "Amour" "anon" 24))
 (define (birthday person)
   (make-person (person-first person)
                (person-last person)
                (+ 1 (person-age person))))
-
+;;
 (check-expect (change-name-to-match (make-person "Amour" "anon" 23) (make-person "Clayton" "Bivens" 30))
               (make-person "Amour" "Bivens" 23))
 (define (change-name-to-match person1 person2)
   (make-person (person-first person1)
                (person-last person2)
                (person-age person1)))
-
+;;
 (check-expect (raise-salary-percent (make-employee "Bob" 123 50000) 5) (make-employee "Bob" 123 52500))
 (define (raise-salary-percent emp number)
   (make-employee (employee-name emp)
                  (employee-id emp)
                  (+ (employee-salary emp)
                     (* (* .01 number) (employee-salary emp)))))
-
+;;
 (check-expect (add-a-vote (make-candidate "Clayton" 20)) (make-candidate "Clayton" 21))
 (define (add-a-vote candidate)
   (make-candidate (candidate-name candidate)
                   (+ 1 (candidate-votes candidate))))
-
+;;
 (check-expect (swap-length-width (make-rect 20 10)) (make-rect 10 20))
 (define (swap-length-width rect)
   (make-rect (rect-length rect)
              (rect-width rect)))
+;;
+; A moving-x consists of x (a number) and
+; dir (a string, either "left" or "right")
+
+(define SPEED 3)
+
+(define-struct moving-x (x dir))
+; make-moving-x : number string -> moving-x
+; moving-x-x : moving-x -> number
+; moving-x-dir : moving-x -> string
+; moving-x? : object -> boolean
+(define state1 (make-moving-x 10 "right"))
+(define state2 (make-moving-x 29 "left"))
+(check-expect (moving-x-x state1) 10)
+(check-expect (moving-x-dir state2) "left")
+
+
+(define (calendar-at-x x)
+  (place-image
+   pic:calendar
+   x 50
+   (rectangle 200 200 "solid" "white")))
+
+(define (handle-draw current)
+  (calendar-at-x (moving-x-x current)))
+
+(check-expect (handle-tick (make-moving-x 10 "right"))
+              (make-moving-x (+ 10 SPEED) "right"))
+(check-expect (handle-tick (make-moving-x 29 "left"))
+              (make-moving-x (- 29 SPEED) "left"))
+(check-error (handle-tick (make-moving-x 53 "fnord"))
+             "handle-tick: Direction is neither left nor right!")
+
+(define (handle-tick current)
+  (cond [(string=? (moving-x-dir current) "left")
+         (make-moving-x (- (moving-x-x current) SPEED) "left")]
+        [(string=? (moving-x-dir current) "right")
+         (make-moving-x (+ (moving-x-x current) SPEED) "right")]
+        [else (error 'handle-tick "Direction is neither left nor right!")]))
+
+(check-expect (handle-key state1 "up") state1)
+(check-expect (handle-key state1 "right") state1)
+(check-expect (handle-key state1 "left")
+              (make-moving-x 10 "left"))
+(check-expect (handle-key state2 "right")
+              (make-moving-x 29 "right"))
+(define (handle-key current key)
+  (cond [(or (key=? key "left") (key=? key "right"))
+         (make-moving-x (moving-x-x current) key)]
+        [else current ]))
+
+(big-bang
+(make-moving-x (/ WIDTH 2) "right") ; start at middle, moving right
+(check-with moving-x?)
+(on-draw handle-draw)
+(on-tick handle-tick 1)
+(on-key handle-key))
+
