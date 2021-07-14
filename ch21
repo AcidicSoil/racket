@@ -78,7 +78,7 @@
 
 (define-struct my-posn (x y))
 
-(define WIDTH 300)
+(define WIDTH 200)
 (define HEIGHT 300)
 (define BACKGROUND (empty-scene WIDTH HEIGHT))
 (define DOT (circle 3 "solid" "blue"))
@@ -347,14 +347,20 @@
 (check-error (handle-tick (make-moving-x 53 "fnord"))
              "handle-tick: Direction is neither left nor right!")
 
+(define width-edge-point (- WIDTH (/ (image-width pic:calendar) 2)))
+
+(define zero-edge-point (/ (image-width pic:calendar) 2))
+
 (define (handle-tick current)
-  (cond [(and (string=? (moving-x-dir current) "left")
-              (> (moving-x-x current) 0))
-         (make-moving-x (- (moving-x-x current) SPEED) "left")]
-        [(and (string=? (moving-x-dir current) "right")
-              (< (moving-x-x current) WIDTH))
-         (make-moving-x (+ (moving-x-x current) SPEED) "right")]
-        [else (error 'handle-tick "Direction is neither left nor right!")]))
+  (cond[(>= (moving-x-x current) width-edge-point)
+        (make-moving-x (- (moving-x-x current) SPEED) "left")]
+       [(<= (moving-x-x current) zero-edge-point)
+        (make-moving-x (+ (moving-x-x current) SPEED) "right")]
+       [(string=? (moving-x-dir current) "left")
+        (make-moving-x (- (moving-x-x current) SPEED) "left")]
+       [(string=? (moving-x-dir current) "right")
+        (make-moving-x (+ (moving-x-x current) SPEED) "right")]
+       [else (error 'handle-tick "Direction is neither left nor right!")]))
 
 (check-expect (handle-key state1 "up") state1)
 (check-expect (handle-key state1 "right") state1)
@@ -368,10 +374,8 @@
         [else current ]))
 
 (big-bang
-(make-moving-x (/ WIDTH 2) "right") ; start at middle, moving right
-(check-with moving-x?)
-(on-draw handle-draw)
-(on-tick handle-tick 1)
-(on-key handle-key))
-
- 
+    (make-moving-x (/ WIDTH 2) "right")
+  (check-with moving-x?)
+  (on-draw handle-draw)
+  (on-tick handle-tick 1)
+  (on-key handle-key))
