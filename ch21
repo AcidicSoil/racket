@@ -373,9 +373,17 @@
          (make-moving-x (moving-x-x current) key)]
         [else current ]))
 
-(big-bang
+#|(big-bang
     (make-moving-x (/ WIDTH 2) "right")
   (check-with moving-x?)
   (on-draw handle-draw)
   (on-tick handle-tick 1)
-  (on-key handle-key))
+  (on-key handle-key))|#
+;;;;;
+
+(define-struct placed-circ (make-posn x y) radius)
+
+(define-struct placed-rect (make-posn x y) width height)
+
+(define (circs-overlap? circ1 circ2)
+  (cond [(
