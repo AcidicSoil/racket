@@ -10,22 +10,7 @@
 ; nelos-first : nelos -> string
 ; nelos-rest : nelos -> los
 ; nelos? : anything -> boolean
-#|
-(define (function-on-nelos L)
-; L a nelos
-; (nelos-first L) a string
-; (nelos-rest L) a los
-; (function-on-los (nelos-rest L)) whatever this returns
-...)
-|#
-; A los is either an empty-list or a nelos.
-#|
-(define (function-on-los L)
-; L a los
-(cond [(empty-list? L) ...]
-[(nelos? L) (function-on-nelos L)]
-))
-|#
+
 #|(define nothing (make-empty-list))
 (define english (make-nelos "hello" nothing))
 (define fr-eng (make-nelos "bonjour" english))
@@ -88,9 +73,9 @@
 (define shfe (cons "buenos dias" heb-fr-eng))
 (define ashfe (cons "salaam" shfe))
 (define dwarfs (cons "sleepy" (cons "sneezy" (cons "dopey" (cons "doc"
-(cons "happy" (cons "bashful" (cons "grumpy" empty))))))))
+                                                                 (cons "happy" (cons "bashful" (cons "grumpy" empty))))))))
 
-(define (count-strings L)
+#|(define (count-strings L)
 ; L a los
 (cond [(empty? L) 0]
 [(cons? L) (count-strings-on-nelos L)]))
@@ -101,5 +86,48 @@
 ; (rest L) a los (cons "b" (cons "c" empty))
 ; (count-strings (rest L)) a number 2
 ; right answer a number 3
-(+ 1 (count-strings (rest L))))
+(+ 1 (count-strings (rest L))))|#
 
+(define (count-strings L)
+  ; L a los
+  (cond [(empty? L) 0]
+        [(cons? L)
+         ; L a nelos
+         ; (first L) a string
+         ; (rest L) a los
+         ; (count-strings (rest L)) a number
+         (+ 1 (count-strings (rest L)))]))
+
+(define (count-numbers L)
+  ; L a lon
+  (cond [(empty? L) 0]
+        [(cons? L)
+         ; L a nelon
+         ; (first L) a number
+         ; (rest L) a lon
+         ; (count-numbers (rest L)) a number
+         (+ 1 (count-numbers (rest L)))]))
+
+
+
+; add-up : list-of-numbers -> number
+(check-expect (add-up empty) 0)
+(check-expect (add-up (cons 14 empty)) 14)
+(check-expect (add-up (cons 3 (cons 4 empty))) 7)
+(check-expect (add-up (cons 4 (cons 8 (cons -3 empty)))) 9)
+
+(define (add-up L)
+  ; L lon
+  (cond [(empty? L) 0]
+        [(cons? L)
+         ; L nelon
+         ; (first L) number
+         ; (rest L) lon
+         ; (add-up (rest L)) number
+         (+ (first L) (add-up (rest L)))]))
+
+(define (contains-doll? L)
+  (cond [(empty? L) false]
+        [(cons? L)
+         (or (string=?  (first L) "doll")
+             (contains-doll? (rest L)))]))
