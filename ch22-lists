@@ -131,3 +131,16 @@
         [(cons? L)
          (or (string=?  (first L) "doll")
              (contains-doll? (rest L)))]))
+
+(define (any-matches? str L)
+  (cond [(empty? L) false]
+        [(cons? L)
+         (or (string=? (first L) str)
+             (any-matches? str (rest L)))]))
+
+(define (count-matches obj L)
+  (cond [(empty? L) 0]
+        [(cons? L)
+         (cond [(equal? (first L) obj)(+ 1 (count-matches obj (first L)))]
+                    [(equal? (rest L) obj)(+ 1 (count-matches obj (rest L)))]
+        [else (count-matches obj (rest L))])
