@@ -1,6 +1,5 @@
 (require picturing-programs)
 
-
 ; make-struct-name : n objects -> struct-name
 ; struct-name -field-name-1 : struct-name -> object
 ; ...
@@ -380,10 +379,37 @@
   (on-tick handle-tick 1)
   (on-key handle-key))|#
 ;;;;;
+(define BLANK (empty-scene WIDTH HEIGHT))
 
-(define-struct placed-circ (make-posn x y) radius)
+(define (distance x-and-y-1 x-and-y-2)
+  (sqrt(+ (sqr(- (posn-x x-and-y-2) (posn-x x-and-y-1)))
+          (sqr (- (posn-y x-and-y-2) (posn-y x-and-y-1))))))
 
-(define-struct placed-rect (make-posn x y) width height)
 
+#|(check-expect (placed-circ (make-posn 40 50) 5)
+              (place-image (circle 5 "outline" "black")
+                           40 50
+                           blank)) 
+  ; posn     is a posn-x and posn-y
+  ; radius   is a number
+  (place-image (circle radius "outline" "black")
+               (posn-x posn) (posn-y posn)
+               blank))|#
+(define-struct placed-circ (posn radius))
+
+(define-struct placed-rect (posn width height))
+
+
+#|(check-expect (circs-overlap? ((placed-circ (make-posn 40 50) 5)
+                               (placed-circ (make-posn 200 250) 5))) false)
+(check-expect (circs-overlap? ((placed-circ (make-posn 40 50) 30)
+                               (placed-circ (make-posn 70 90) 50))) true)|#
 (define (circs-overlap? circ1 circ2)
-  (cond [(
+  (cond [(>(+ (placed-circ-radius circ1)
+              (placed-circ-radius circ2)) 
+           (distance (placed-circ-posn circ1)(placed-circ-posn circ2))) true]
+        [else false]))
+
+
+
+                 
