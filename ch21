@@ -400,16 +400,12 @@
 (define-struct placed-rect (posn width height))
 
 
-#|(check-expect (circs-overlap? ((placed-circ (make-posn 40 50) 5)
-                               (placed-circ (make-posn 200 250) 5))) false)
-(check-expect (circs-overlap? ((placed-circ (make-posn 40 50) 30)
-                               (placed-circ (make-posn 70 90) 50))) true)|#
+(check-expect (circs-overlap? (make-placed-circ (make-posn 40 50) 5)
+                               (make-placed-circ (make-posn 200 250) 5)) false)
+(check-expect (circs-overlap? (make-placed-circ (make-posn 40 50) 30)
+                               (make-placed-circ (make-posn 70 90) 50)) true)
 (define (circs-overlap? circ1 circ2)
   (cond [(>(+ (placed-circ-radius circ1)
               (placed-circ-radius circ2)) 
            (distance (placed-circ-posn circ1)(placed-circ-posn circ2))) true]
-        [else false]))
-
-
-
-                 
+        [else false]))             
