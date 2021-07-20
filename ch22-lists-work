@@ -81,34 +81,19 @@
 [(cons? L) (count-strings-on-nelos L)]))
 
 (define (count-strings-on-nelos L)
-; L a nelos (cons "a" (cons "b" (cons "c" empty)))
-; (first L) a string "a"
-; (rest L) a los (cons "b" (cons "c" empty))
-; (count-strings (rest L)) a number 2
-; right answer a number 3
 (+ 1 (count-strings (rest L))))|#
 
 (define (count-strings L)
   ; L a los
   (cond [(empty? L) 0]
         [(cons? L)
-         ; L a nelos
-         ; (first L) a string
-         ; (rest L) a los
-         ; (count-strings (rest L)) a number
          (+ 1 (count-strings (rest L)))]))
 
 (define (count-numbers L)
   ; L a lon
   (cond [(empty? L) 0]
         [(cons? L)
-         ; L a nelon
-         ; (first L) a number
-         ; (rest L) a lon
-         ; (count-numbers (rest L)) a number
          (+ 1 (count-numbers (rest L)))]))
-
-
 
 ; add-up : list-of-numbers -> number
 (check-expect (add-up empty) 0)
@@ -132,26 +117,54 @@
          (or (string=?  (first L) "doll")
              (contains-doll? (rest L)))]))
 
-(define (any-str-matches? str L)
+(define (any-matches? str L)
   (cond [(empty? L) false]
         [(cons? L)
          (or (string=? (first L) str)
-             (any-str-matches? str (rest L)))]))
+             (any-matches? str (rest L)))]))
 
-(define (any-num-matches? num L)
-  (cond [(empty? L) false]
-        [(cons? L)
-         (or (= (first L) num)
-             (any-num-matches? num (rest L)))]))
+(define (count-matches obj xs)
+  (cond
+    [(empty? xs) 0]
+    [(cons? xs)
+     (+ (count-matches obj (rest xs))
+        (cond
+          [(equal? (first xs) obj) 1]
+          [else 0]))]))
 
-(define (count-matches obj L)
-  (cond [(empty? L) 0]
-        [(cons? L)
-         (cond [(string? obj)
-                (cond [(any-str-matches? obj L) (count-strings L)]
-                      [else false])]
-               [(number? obj)
-                (cond [(any-num-matches? obj L) (count-numbers L)]
-                      [else false])])
-         ]))
+(define (count-votes-for-name s L)
+  (cond
+    [(empty? L) 0]
+    [(cons? L)
+     (+ (count-matches s (rest L))
+        (cond
+          [(equal? (first L) s) 1]
+          [else 0]))]))
+
+(define (count-over n L)
+  (cond
+    [(empty? L) 0]
+    [(cons? L)
+     (+ (count-over n (rest L))
+        (cond
+          [(> (first L) n) 1]
+          [else 0]))]))
+
+(define (average L)
+  (cond
+    [(empty? L) 0]
+    [(cons? L)
+     (/ (+ (first L) (add-up (rest L))) (length L))]))
+
+(define (safe-average L)
+  (cond
+    [(empty? L) (error 'safe-average " expects numbers in a list, but instead found 0")]
+    [(cons? L)
+     (/ (+ (first L) (add-up (rest L))) (length L))]))
+
+(define (convert-reversed L)
+  (cond
+    [(empty? L) 0]
+    [(cons? L)
+     (
      
