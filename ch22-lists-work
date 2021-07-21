@@ -167,4 +167,5 @@
     [(empty? L) 0]
     [(cons? L)
       (reverse L)]))
-     
+      
+      Try list-tail then use count-numbers for the pos value in list-tail
