@@ -1,5 +1,6 @@
 (require picturing-programs)
-
+(require racket/base)
+(provide (all-defined-out))
 ; An empty list has no parts.
 (define-struct empty-list ())
 ; make-empty-list : nothing -> empty-list
@@ -162,10 +163,34 @@
     [(cons? L)
      (/ (+ (first L) (add-up (rest L))) (length L))]))
 
+
+(define (convert-reversed2 L)
+  (cond
+    [(empty? L) 0]
+    [(cons? L)
+      (first L)]))
 (define (convert-reversed L)
   (cond
     [(empty? L) 0]
     [(cons? L)
-      (reverse L)]))
-      
-      Try list-tail then use count-numbers for the pos value in list-tail
+       (* (count-numbers L)(expt 10(- (count-numbers L) 1)))])) 
+                         
+ ; Try list-tail then use count-numbers for the pos value in list-tail
+ 
+ (require picturing-programs)
+(require "ch22-lists.rkt")
+
+(define (convert-reversed1 L)
+  (cond
+    [(empty? L) 0]
+    [(cons? L)
+       (* (count-numbers L)(expt 10(- (count-numbers L) 1)))]))
+
+(define (head-list L)
+  (cond
+    [(empty? L) 0]
+    [(cons? L)
+     
+
+; the 1st is the lowest in this case, no?
+; 1st * 10^0 + 2nd * 10^1 + n-th * 10^(n-1)
