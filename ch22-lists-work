@@ -166,5 +166,5 @@
   (cond
     [(empty? L) 0]
     [(cons? L)
-     (
+      (reverse L)]))
      
