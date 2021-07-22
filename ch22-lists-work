@@ -89,9 +89,19 @@
      (/ (+ (first L) (add-up (rest L))) (length L))]))
 
 (define (2-d a b)
-   (+ (* 10 a) b))
+  (+ (* 10 a) b))
 
 (define (convert-reversed L)
   (cond
     [(empty? L) 0]
     [else (2-d (convert-reversed (rest L)) (first L))])) 
+
+(define (m-d a b)
+  (* a b))
+
+(define (multiply-all L)
+  (cond
+    [(empty? L) 1]
+    [else
+     (* (first L)(multiply-all (rest L)))]))
+
