@@ -1,73 +1,7 @@
 (require picturing-programs)
 (require racket/base)
 (provide (all-defined-out))
-; An empty list has no parts.
-(define-struct empty-list ())
-; make-empty-list : nothing -> empty-list
-; empty-list? : anything -> boolean
-; A nelos has two parts: first (a string) and rest (a los).
-(define-struct nelos (first rest))
-; make-nelos : string los -> nelos
-; nelos-first : nelos -> string
-; nelos-rest : nelos -> los
-; nelos? : anything -> boolean
 
-#|(define nothing (make-empty-list))
-(define english (make-nelos "hello" nothing))
-(define fr-eng (make-nelos "bonjour" english))
-(define heb-fr-eng (make-nelos "shalom" fr-eng))
-(define shfe (make-nelos "buenos dias" heb-fr-eng))
-(define ashfe (make-nelos "salaam" shfe))
-(define dwarfs (make-nelos "sleepy" (make-nelos "sneezy"
-(make-nelos "dopey" (make-nelos "doc" (make-nelos "happy"
-(make-nelos "bashful" (make-nelos "grumpy" nothing))))))))
-
-(check-expect (count-strings nothing) 0)
-(check-expect (count-strings english) 1)
-(check-expect (count-strings fr-eng) 2)
-(check-expect (count-strings ashfe) 5)
-(check-expect (count-strings dwarfs) 7)
-; can’t call (count-strings-on-nelos nothing)
-; because nothing isn’t a nelos
-(check-expect (count-strings-on-nelos english) 1)
-(check-expect (count-strings-on-nelos fr-eng) 2)
-(check-expect (count-strings-on-nelos ashfe) 5)
-(check-expect (count-strings-on-nelos dwarfs) 7)
-
-(define (count-strings L)
-; L a los
-(cond [(empty-list? L) 0]
-[(nelos? L)
-; L a nelos
-; (nelos-first L) a string
-; (nelos-rest L) a los
-; (count-strings (nelos-rest L)) a number
-(+ 1 (count-strings (nelos-rest L)))]))|#
-
-; An empty list has no parts.
-; empty : a constant
-; empty? : anything -> boolean
-; A cons has two parts: first (a string) and rest (a los).
-; cons : string los -> nelos
-; first : nelos -> string
-; rest : nelos -> los
-; cons? : anything -> boolean
-#|
-(define (function-on-nelos L)
-; L a nelos
-; (first L) a string
-; (rest L) a los
-; (function-on-los (rest L)) whatever this returns
-...)
-|#
-; A los is either an empty-list or a nelos.
-#|
-(define (function-on-los L)
-; L a los
-(cond [(empty-list? L) ...]
-[(nelos? L) (function-on-nelos L)]
-))
-|#
 (define english (cons "hello" empty))
 (define fr-eng (cons "bonjour" english))
 (define heb-fr-eng (cons "shalom" fr-eng))
@@ -75,15 +9,6 @@
 (define ashfe (cons "salaam" shfe))
 (define dwarfs (cons "sleepy" (cons "sneezy" (cons "dopey" (cons "doc"
                                                                  (cons "happy" (cons "bashful" (cons "grumpy" empty))))))))
-
-#|(define (count-strings L)
-; L a los
-(cond [(empty? L) 0]
-[(cons? L) (count-strings-on-nelos L)]))
-
-(define (count-strings-on-nelos L)
-(+ 1 (count-strings (rest L))))|#
-
 (define (count-strings L)
   ; L a los
   (cond [(empty? L) 0]
