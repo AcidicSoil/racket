@@ -192,5 +192,47 @@
     [(cons? L)
      
 
+(require picturing-programs)
+(require racket/base)
+(require "ch22.rkt")
 ; the 1st is the lowest in this case, no?
 ; 1st * 10^0 + 2nd * 10^1 + n-th * 10^(n-1)
+
+
+(define (h-func L)
+  (cond
+    [(empty? L) 0]
+    [(cons? L)
+     (* (first L)(expt 10(- (count-numbers (rest L)) 1)))]))
+
+(define (head-list L)
+  (cond
+    [(empty? L) 0]
+    [(cons? L)
+     (length L)]))
+     
+(define (tail-list L)
+  (cond
+    [(empty? L) 0]
+    [(cons? L)
+     (first(rest L))]))
+
+#|(define (h-f L)
+  (cond
+    [(empty? L) 0]
+    [(cons? L)
+     (+ (first L) (+ (* 10  (* 10 (first(rest(rest L))))) (* 10 (first(rest L)))))]))|#
+
+(define (2-d a b)
+   (+ (* 10 a) b))
+
+(define (h-f L)
+  (cond
+    [(empty? L) 0]
+    [else (2-d (h-f (h-f (rest L) (first L))))]))
+    
+
+#|(define (h-f L)
+  (cond
+    [(empty? L) 0]
+    [else (+ (first L)(* 10 (2-d  (first L) (h-f (rest L)))))]))|#
