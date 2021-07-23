@@ -96,12 +96,33 @@
     [(empty? L) 0]
     [else (2-d (convert-reversed (rest L)) (first L))])) 
 
-(define (m-d a b)
-  (* a b))
-
 (define (multiply-all L)
   (cond
     [(empty? L) 1]
     [else
      (* (first L)(multiply-all (rest L)))]))
 
+(define (dollar-store? L)
+  (cond
+    [(empty? L) false]
+    [(cons? L)
+     (or (< (first L) 1)
+         (dollar-store? (rest L)))])) 
+
+(check-expect
+ (all-match? "cat" (cons "cat" (cons "dog" (cons "cat" empty))))
+ false)
+(check-expect
+ (all-match? "cat" (cons "cat" (cons "cat" empty)))
+ true)
+(check-expect
+ (all-match? "cat" empty) true)
+
+
+(define (all-match? str L)
+  (cond
+    [(empty? L) true]
+    [(cons? L)
+     (and (string=? str (first L))
+          (all-match? str (rest L)))]))
+                                      
