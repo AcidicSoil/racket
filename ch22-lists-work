@@ -125,4 +125,17 @@
     [(cons? L)
      (and (string=? str (first L))
           (all-match? str (rest L)))]))
-                                      
+
+
+(define (b-c num)
+  (circle num "outline" "black"))
+
+(define (general-bullseye L)
+  (cond
+    [(empty? L) (circle 0 "solid" "white")]
+    [(cons? L)
+     (overlay (b-c (first L))
+               (general-bullseye (rest L)))]))
+
+(define (add-r L)
+  
