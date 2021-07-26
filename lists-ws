@@ -1,0 +1,129 @@
+#lang racket
+(require racket/base)
+(require racket/string)
+
+(define (count-over n L)
+  (cond
+    [(empty? L) 0]
+    [(cons? L)
+     (+ (count-over n (rest L))
+        (cond
+          [(> (first L) n) 1]
+          [else 0]))]))
+
+(define (add-small L)
+  (cond
+    [(empty? L) 0]
+    [else
+     (cond
+       [(< (first L) 20)
+        (+ (first L) (add-small (rest L)))]
+       [else
+        (add-small (rest L))])]))
+
+(define (add-big L)
+  (cond
+    [(empty? L) 0]
+    [else
+     (cond
+       [(> (first L) 200)
+        (+ (first L) (add-big (rest L)))]
+       [else
+        (add-big (rest L))])]))
+
+(define (add-even L)
+  (cond
+    [(empty? L) (quote ())]
+    [( (first L))
+     (cons
+      (first L)
+      (cond
+        [(empty? (add-even (rest L)))
+         (quote ())]
+        [else (+ (first L) (add-even (rest L)))]))]))
+  
+; filter positive?
+; map
+;           
+
+(define (add-even-subtract-odd L)
+  (cond
+    [(empty? L) (quote ())]
+    [(even? (first L))
+     (cons (first L)
+           (cond
+             [(empty? (add-even-subtract-odd (rest L)))
+              (quote ())]
+             [else
+              (+ (first L) (add-even-subtract-odd (rest L)))]))]
+    [(odd? (first L))
+     (cons (first L)
+           (cond
+             [(empty? (add-even-subtract-odd (rest L)))
+              (quote ())]
+             [else
+              (+ (first L) (add-even-subtract-odd (rest L)))]))]))
+
+(define (math-sentence L)
+  (cond
+    [(empty? L) (quote ())]
+    [else
+     (cond
+       [(number? (first L))
+        (cons (first L)
+              (cond
+                [(empty? (math-sentence (rest L)))
+                 (quote ())]
+                [else 
+                 (cons "+" (math-sentence (rest L)))]))]
+       [else (cons (first L)
+                   (math-sentence  (rest L)))])])) 
+
+(define (list-of-strings L)
+  (cond
+    [(empty? L)  (quote ())]
+    [else
+     (cond
+       [(string? (first L))
+        (cons
+         (first L)
+         (cond
+           [(empty? (list-of-strings (rest L)))
+            (cons  "." (list-of-strings (rest L)))]
+           [else
+            (cons  " " (list-of-strings (rest L)))]))]
+       [else  (cons (first L)
+                    (list-of-strings (rest L)))])])) 
+
+(define (sentence L)
+  (string-append* (list-of-strings L)))
+
+(define multiinsertR
+  (lambda (new old lat)
+    (cond
+      [(null? lat) (quote ())]
+      [else
+       (cond
+         [(eq? (car lat) old)
+          (cons (car lat)
+                (cons new
+                      (multiinsertR new old
+                                    (cdr lat))))]
+         [else (cons (car lat)
+                     (multiinsertR new old
+                                   (cdr lat)))])])))
+
+(define (hyphenate-words L)
+  (cond
+    [(empty? L) (quote ())]
+    [else
+     (cond
+       [(string? (first L))
+        (cons (first L)
+              (cond
+                [(empty? (hyphenate-words (rest L)))
+                 (quote ())]
+                [else 
+                 (cons  "-" (hyphenate-words (rest L)))]))]
+       [else (cons (first L)
+                   (hyphenate-words  (rest L)))])]))
