@@ -31,38 +31,125 @@
        [else
         (add-big (rest L))])]))
 
+(define add1
+  (lambda (n)
+    (+ n 1)))
+
+(define sub1
+  (lambda (n)
+    (- n 1)))
+
+(define 0+
+  (lambda (n m)
+    (cond
+      [(zero? m) n]
+      [else (add1 (0+ n (sub1 m)))])))
+
+(define 0-
+  (lambda (n m)
+    (cond
+      [(zero? m) n]
+      [else (sub1 (0- (sub1 m)))])))
+
+(define addtup
+  (lambda (tup)
+    (cond
+      ((null? tup) 0)
+      (else
+       (0+ (car tup) (addtup (cdr tup)))))))
+
+(define times
+  (lambda (n m)
+    (cond
+      [(zero? m) 0]
+      [else
+       (0+ n (times n (sub1 m)))])))
+
+(define tup+
+  (lambda (tup1 tup2)
+    (cond
+      [(null? tup1) tup2]
+      [(null? tup2) tup1]
+      [else
+       (cons (0+ (car tup1) (car tup2))
+             (tup+
+              (cdr tup1)(cdr tup2)))])))
+
+(define >
+  (lambda (n m)
+    (cond
+      [(zero? m) false]
+      [(zero? n) true]
+      [else
+       (> (sub1 n) (sub1 m))])))
+
+(define <
+  (lambda (n m)
+    (cond
+      [(zero? m) true]
+      [(zero? n) false]
+      [else
+       (< (sub1 n) (sub1 m))])))
+
+(define =
+  (lambda (n m)
+    (cond
+      [(> n m) false]
+      [(< n m) false]
+      [else true])))
+
+
+(define ^
+  (lambda (n m)
+    (cond
+      [(zero? m) 1]
+      [else (times n (^ n (sub1 m)))])))
+
+(define div
+  (lambda (n m)
+    (cond
+      [(< n m) 0]
+      [else (add1 (div (0- n m) m))])))
+
+
+
 (define (add-even L)
   (cond
-    [(empty? L) (quote ())]
-    [( (first L))
-     (cons
-      (first L)
-      (cond
-        [(empty? (add-even (rest L)))
-         (quote ())]
-        [else (+ (first L) (add-even (rest L)))]))]))
-  
-; filter positive?
-; map
-;           
+    [(null? L) 0]
+    [(not(= (modulo (first L) 2) 0))
+     (add-even (rest L))]
+    [else
+     (+ (first L) (add-even (rest L)))]))
+
+(define (add-odd L)
+  (cond
+    [(null? L) 0]
+    [(= (modulo (first L) 2) 0)
+     (add-odd (rest L))]
+    [else
+     (+ (first L) (add-odd (rest L)))]))
+               
 
 (define (add-even-subtract-odd L)
   (cond
-    [(empty? L) (quote ())]
-    [(even? (first L))
-     (cons (first L)
-           (cond
-             [(empty? (add-even-subtract-odd (rest L)))
-              (quote ())]
-             [else
-              (+ (first L) (add-even-subtract-odd (rest L)))]))]
-    [(odd? (first L))
-     (cons (first L)
-           (cond
-             [(empty? (add-even-subtract-odd (rest L)))
-              (quote ())]
-             [else
-              (+ (first L) (add-even-subtract-odd (rest L)))]))]))
+    [(null? L) 0]
+    [(cons? L)
+     (- (add-even L) (add-odd L))]))
+
+(define (l-t-100? n)
+  (< 100 n))
+
+(define (g-t-50? n)
+  (> 50 n))
+
+(define (add-medium L)
+  (cond
+    [(null? L) 0]
+    [(and (l-t-100? (first L))
+          (g-t-50? (first L)))
+     (add-medium (rest L))]
+    [else
+     (+ (first L) (add-medium (rest L)))]))
 
 (define (math-sentence L)
   (cond
@@ -91,7 +178,7 @@
            [(empty? (list-of-strings (rest L)))
             (cons  "." (list-of-strings (rest L)))]
            [else
-            (cons  " " (list-of-strings (rest L)))]))]
+            (cons  "" (list-of-strings (rest L)))]))]
        [else  (cons (first L)
                     (list-of-strings (rest L)))])])) 
 
@@ -113,7 +200,30 @@
                      (multiinsertR new old
                                    (cdr lat)))])])))
 
-(define (hyphenate-words L)
+(define insertR
+  (lambda (new old lat)
+    (cond
+      ((null? lat) (quote ()))
+      (else
+       (cond
+         ((eq? (car lat) old)
+          (cons old
+                (cons new (cdr lat))))
+         (else (cons (car lat)
+                     (insertR new old
+                              (cdr lat)))))))))
+
+#|(define (hyphen 
+
+(define (insert old new L)
+  (cond
+    [(empty? L) (quote())]
+    [else
+     (cond
+       [(eq? (first L)  |#
+
+
+(define (hyph-helper L)
   (cond
     [(empty? L) (quote ())]
     [else
@@ -121,9 +231,37 @@
        [(string? (first L))
         (cons (first L)
               (cond
-                [(empty? (hyphenate-words (rest L)))
+                [(empty? (hyph-helper (rest L)))
                  (quote ())]
                 [else 
-                 (cons  "-" (hyphenate-words (rest L)))]))]
+                 (cons  "-" (hyph-helper (rest L)))]))]
        [else (cons (first L)
-                   (hyphenate-words  (rest L)))])]))
+                   (hyph-helper  (rest L)))])]))
+
+(define (hyphenate-words L)
+  (cond
+    [(empty? L) (quote())]
+    [else
+     (sentence (hyph-helper L))])) 
+
+(define (cram-small-helper L)
+  (cond
+    [(empty? L) (quote())]
+    [(< (string-length (first L)) 5)
+     (cons
+      (first L)
+      (cram-small-helper (rest L)))]
+    [else
+     (cram-small-helper (rest L))]))
+
+(define (cram-small L)
+  (cond
+    [(empty? L) (quote())]
+    [(cons? L)
+     (sentence (cram-small-helper L))]))
+
+
+#|(define (circle-sequence L)
+  (cond
+    [(null? L) 0]|#
+    
