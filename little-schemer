@@ -1,129 +1,317 @@
-#lang racket
+(require picturing-programs)
 (require racket/base)
-(require racket/string)
+(provide (all-defined-out))
 
-(define (count-over n L)
-  (cond
-    [(empty? L) 0]
-    [(cons? L)
-     (+ (count-over n (rest L))
-        (cond
-          [(> (first L) n) 1]
-          [else 0]))]))
+(define atom?
+  (lambda (x)
+    (and (not (pair? x)) (not (null? x)))))
 
-(define (add-small L)
-  (cond
-    [(empty? L) 0]
-    [else
-     (cond
-       [(< (first L) 20)
-        (+ (first L) (add-small (rest L)))]
-       [else
-        (add-small (rest L))])]))
+(define lat?
+  (lambda (l)
+    (cond
+      ((null?) true)
+      ((atom? (car l)) (lat? (cdr l)))
+      (else false))))
 
-(define (add-big L)
-  (cond
-    [(empty? L) 0]
-    [else
-     (cond
-       [(> (first L) 200)
-        (+ (first L) (add-big (rest L)))]
-       [else
-        (add-big (rest L))])]))
+(define member?
+  (lambda (a lat)
+    (cond
+      ((null? lat) false) ;if list of atoms isn't a empty list, then false
+      (else (or (eq? (car lat) a) ;else if the first is equal to the argument
+                ;or the rest of the list is equal to the argument
+                (member? a (cdr lat)))))))
 
-(define (add-even L)
-  (cond
-    [(empty? L) (quote ())]
-    [( (first L))
-     (cons
-      (first L)
-      (cond
-        [(empty? (add-even (rest L)))
-         (quote ())]
-        [else (+ (first L) (add-even (rest L)))]))]))
-  
-; filter positive?
-; map
-;           
+#|(define rember
+  (lambda (a lat)
+    (cond
+      ((null? lat) (quote ()))
+      (else (cond
+              ((eq? (car lat) a) (cdr lat))
+              (else (cons (car lat)
+                          (rember a
+                                  (cdr lat)))))))))|#
 
-(define (add-even-subtract-odd L)
-  (cond
-    [(empty? L) (quote ())]
-    [(even? (first L))
-     (cons (first L)
-           (cond
-             [(empty? (add-even-subtract-odd (rest L)))
-              (quote ())]
-             [else
-              (+ (first L) (add-even-subtract-odd (rest L)))]))]
-    [(odd? (first L))
-     (cons (first L)
-           (cond
-             [(empty? (add-even-subtract-odd (rest L)))
-              (quote ())]
-             [else
-              (+ (first L) (add-even-subtract-odd (rest L)))]))]))
+(define rember
+  (lambda (a lat)
+    (cond
+      ((null? lat) (quote ()))
+      ((eq? (car lat) a) (cdr lat))
+      (else (cons (car lat)
+                  (rember a (cdr lat)))))))
 
-(define (math-sentence L)
-  (cond
-    [(empty? L) (quote ())]
-    [else
-     (cond
-       [(number? (first L))
-        (cons (first L)
-              (cond
-                [(empty? (math-sentence (rest L)))
-                 (quote ())]
-                [else 
-                 (cons "+" (math-sentence (rest L)))]))]
-       [else (cons (first L)
-                   (math-sentence  (rest L)))])])) 
+(define multirember
+  (lambda (a lat)
+    (cond
+      ((null? lat) (quote ()))
+      (else
+       (cond
+         ((eq? (car lat) a)
+          (multirember a (cdr lat)))
+         (else (cons (car lat)
+                     (multirember a
+                                  (cdr lat)))))))))
 
-(define (list-of-strings L)
-  (cond
-    [(empty? L)  (quote ())]
-    [else
-     (cond
-       [(string? (first L))
-        (cons
-         (first L)
-         (cond
-           [(empty? (list-of-strings (rest L)))
-            (cons  "." (list-of-strings (rest L)))]
-           [else
-            (cons  " " (list-of-strings (rest L)))]))]
-       [else  (cons (first L)
-                    (list-of-strings (rest L)))])])) 
+(define firsts
+  (lambda (l)
+    (cond
+      ((null? l) (quote ()))
+      (else (cons (car (car l)) (firsts (cdr l)))))))
 
-(define (sentence L)
-  (string-append* (list-of-strings L)))
-
-(define multiinsertR
+(define insertR
   (lambda (new old lat)
     (cond
-      [(null? lat) (quote ())]
+      ((null? lat) (quote ()))
+      (else
+       (cond
+         ((eq? (car lat) old)
+          (cons old
+                (cons new (cdr lat))))
+         (else (cons (car lat)
+                     (insertR new old
+                              (cdr lat)))))))))
+
+#|(define multiinsertR
+  (lambda (new old lat)
+    (cond
+      (null? lat) (quote ()))
+    (else
+     (cond
+       ((eq? (car lat) old)
+        (cons old
+              (cons new
+                    (multiinsertR new old
+                                  (cdr lat)))))
+       (else (cons (car lat)
+                   (multiinsertR new old
+                                 (cdr lat)))))))) |#
+
+(define insertL
+  (lambda (new old lat)
+    (cond
+      ((null? lat) (quote ()))
+      (else
+       (cond
+         ((eq? (car lat) old)
+          (cons new
+                (cons old (cdr lat))))
+         (else (cons (car lat)
+                     (insertL new old
+                              (cdr lat)))))))))
+
+#|(define multiinsertL
+  (lambda (new old lat)
+    (cond
+      (null? lat) (quote ()))
+    (else
+     (cond
+       ((eq? (car lat) old)
+        (cons new
+              (cons old
+                    (multiinsertL new old
+                                  (cdr lat)))))
+       (else (cons (car lat)
+                   (multiinsertL new old
+                                 (cdr lat))))))))|#
+
+(define subst
+  (lambda (new old lat)
+    (cond
+      ((null? lat) (quote ()))
+      (else (cond
+              ((eq? (car lat) old)
+               (cons new (cons old (cdr lat))))
+              (else (cons (car lat)(subst new old
+                                          (cdr lat)))))))))
+
+(define subst2
+  (lambda (new o1 o2 lat)
+    (cond
+      ((null? lat) (quote ()))
+      (else (cond
+              ((eq? (car lat) o1)
+               (cons new (cdr lat)))
+              ((eq? (car lat) o2)
+               (cons new (cdr lat)))
+              (else (cons (car lat)
+                          (subst2 new o1 o2
+                                  (cdr lat)))))))))
+
+#|(define multisubst
+  (lambda (new old lat)
+    (cond
+      (null? lat) (quote ()))
+    (else (cond
+            ((eq? (car lat) old
+                  (cdr lat))))
+          (else (cons (car lat)
+                      (multisubst new old
+                                  (cdr lat)))))))|#
+
+(define add1
+  (lambda (n)
+    (+ n 1)))
+
+(define sub1
+  (lambda (n)
+    (- n 1)))
+
+(define plus
+  (lambda (n m)
+    (cond
+      [(zero? m) n]
+      [else (add1 (plus n (sub1 m)))])))
+
+(define minus
+  (lambda (n m)
+    (cond
+      [(zero? m) n]
+      [else (sub1 (minus (sub1 m)))])))
+
+(define addtup
+  (lambda (tup)
+    (cond
+      ((null? tup) 0)
+      (else
+       (plus (car tup) (addtup (cdr tup)))))))
+
+(define times
+  (lambda (n m)
+    (cond
+      [(zero? m) 0]
+      [else
+       (plus n (times n (sub1 m)))])))
+
+(define tup+
+  (lambda (tup1 tup2)
+    (cond
+      [(null? tup1) tup2]
+      [(null? tup2) tup1]
+      [else
+       (cons (plus (car tup1) (car tup2))
+             (tup+
+              (cdr tup1)(cdr tup2)))])))
+
+(define >
+  (lambda (n m)
+    (cond
+      [(zero? n) false]
+      [(zero? m) true]
+      [else
+       (> (sub1 n) (sub1 m))])))
+
+(define <
+  (lambda (n m)
+    (cond
+      [(zero? m) false]
+      [(zero? n) true]
+      [else
+       (< (sub1 n) (sub1 m))])))
+
+(define =
+  (lambda (n m)
+    (cond
+      [(> n m) false]
+      [(< n m) false]
+      [else true])))
+
+
+(define ^
+  (lambda (n m)
+    (cond
+      [(zero? m) 1]
+      [else (times n (^ n (sub1 m)))])))
+
+(define div
+  (lambda (n m)
+    (cond
+      [(< n m) 0]
+      [else (add1 (div (minus n m) m))])))
+
+(define length
+  (lambda (lat)
+    (cond
+      [(null? lat) 0]
+      [else (add1 (length (cdr lat)))])))
+
+(define pick
+  (lambda (n lat)
+    (cond
+      [(zero? (sub1 n)) (car lat)]
+      [else (pick (sub1 n) (cdr lat))])))
+
+; we rewrite it differently down below added one? instead of zero?
+#|(define rempick
+  (lambda (n lat)
+    (cond
+      [(zero? (sub1 n)) (cdr lat)]
+      [else (cons (car lat)
+                  (rempick (sub1 n)
+                           (cdr lat)))])))|#
+
+(define no-nums
+  (lambda (lat)
+    (cond
+      [(null? lat) (quote())]
+      [else (cond
+              [(number? (car lat))
+               (no-nums (cdr lat))]
+              [else (cons (car lat)
+                          (no-nums
+                           (cdr lat)))])])))
+
+(define all-nums
+  (lambda (lat)
+    (cond
+      [(null? lat) (quote())]
       [else
        (cond
-         [(eq? (car lat) old)
+         [(number? (car lat))
           (cons (car lat)
-                (cons new
-                      (multiinsertR new old
-                                    (cdr lat))))]
-         [else (cons (car lat)
-                     (multiinsertR new old
-                                   (cdr lat)))])])))
+                (all-nums (cdr lat)))]
+         [else (all-nums (cdr lat))])])))
 
-(define (hyphenate-words L)
-  (cond
-    [(empty? L) (quote ())]
-    [else
-     (cond
-       [(string? (first L))
-        (cons (first L)
-              (cond
-                [(empty? (hyphenate-words (rest L)))
-                 (quote ())]
-                [else 
-                 (cons  "-" (hyphenate-words (rest L)))]))]
-       [else (cons (first L)
-                   (hyphenate-words  (rest L)))])]))
+(define eqan?
+  (lambda (a1 a2)
+    (cond
+      [(and (number? a1) (number? a2))
+       (= a1 a2)]
+      [(or (number? a1) (number? a2))
+       false]
+      [else (eq? a1 a2)])))
+
+(define occur
+  (lambda (a lat)
+    (cond
+      [(null? lat) 0]
+      [else
+       (cond
+         [(eq? (car lat) a)
+          (add1 (occur a (cdr lat)))]
+         [else (occur a (cdr lat))])])))
+
+(define one?
+  (lambda (n)
+    (cond
+      [(zero? n) false]
+      [else (zero? (sub1 n))])))
+
+(define rempick
+  (lambda (n lat)
+    (cond
+      [(one? n) (cdr lat)]
+      [else (cons (car lat)
+                  (rempick (sub1 n)
+                           (cdr lat)))])))
+
+(define rember*
+  (lambda (a l)
+    (cond
+      [(null? l) (quote ())]
+      [(atom? (car l))
+       (cond
+         [(eq? (car l) a)
+          (rember* a (cdr l))]
+         [else (cons (car l)
+                     (rember* a (cdr l)))])]
+      [else (cons (rember* a (car l))
+                  (rember* a (cdr l)))])))
