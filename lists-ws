@@ -1,6 +1,7 @@
 #lang racket
 (require racket/base)
 (require racket/string)
+(require picturing-programs)
 
 (define (count-over n L)
   (cond
@@ -30,88 +31,6 @@
         (+ (first L) (add-big (rest L)))]
        [else
         (add-big (rest L))])]))
-
-(define add1
-  (lambda (n)
-    (+ n 1)))
-
-(define sub1
-  (lambda (n)
-    (- n 1)))
-
-(define plus
-  (lambda (n m)
-    (cond
-      [(zero? m) n]
-      [else (add1 (plus n (sub1 m)))])))
-
-(define minus
-  (lambda (n m)
-    (cond
-      [(zero? m) n]
-      [else (sub1 (minus (sub1 m)))])))
-
-(define addtup
-  (lambda (tup)
-    (cond
-      ((null? tup) 0)
-      (else
-       (plus (car tup) (addtup (cdr tup)))))))
-
-(define times
-  (lambda (n m)
-    (cond
-      [(zero? m) 0]
-      [else
-       (plus n (times n (sub1 m)))])))
-
-(define tup+
-  (lambda (tup1 tup2)
-    (cond
-      [(null? tup1) tup2]
-      [(null? tup2) tup1]
-      [else
-       (cons (plus (car tup1) (car tup2))
-             (tup+
-              (cdr tup1)(cdr tup2)))])))
-
-(define >
-  (lambda (n m)
-    (cond
-      [(zero? n) false]
-      [(zero? m) true]
-      [else
-       (> (sub1 n) (sub1 m))])))
-
-(define <
-  (lambda (n m)
-    (cond
-      [(zero? m) false]
-      [(zero? n) true]
-      [else
-       (< (sub1 n) (sub1 m))])))
-
-(define =
-  (lambda (n m)
-    (cond
-      [(> n m) false]
-      [(< n m) false]
-      [else true])))
-
-
-(define ^
-  (lambda (n m)
-    (cond
-      [(zero? m) 1]
-      [else (times n (^ n (sub1 m)))])))
-
-(define div
-  (lambda (n m)
-    (cond
-      [(< n m) 0]
-      [else (add1 (div (minus n m) m))])))
-
-
 
 (define (add-even L)
   (cond
@@ -260,8 +179,23 @@
     [(cons? L)
      (sentence (cram-small-helper L))]))
 
+(define background
+  (circle 100 "solid" "white"))
 
-#|(define (circle-sequence L)
+(define (ring n)
+  (circle n "outline" "red"))
+
+(define (circle-seq-helper L)
   (cond
-    [(null? L) 0]|#
+    [(null? L) (circle 0 "solid" "white")]
+    [(number? (first L))
+     (overlay (ring (first L))
+              (circle-seq-helper (rest L)))]
+    [else (cons (first L) (circle-seq-helper (rest L)))]))
+
+;(define (cicle-sequence L)
+; (cond
+;  [(null? L) 
+       
+     
     
