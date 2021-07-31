@@ -180,7 +180,7 @@
      (sentence (cram-small-helper L))]))
 
 (define background
-  (circle 100 "solid" "white"))
+  (rectangle 400 400 "solid" "white"))
 
 (define (ring n)
   (circle n "outline" "red"))
@@ -193,9 +193,46 @@
               (circle-seq-helper (rest L)))]
     [else (cons (first L) (circle-seq-helper (rest L)))]))
 
-;(define (cicle-sequence L)
-; (cond
-;  [(null? L) 
-       
+(define (circle-sequence L bg)
+  (cond
+    [(null? L) (circle 0 "solid" "white")]
+    [(number? (first L))
+     (overlay (circle-seq-helper L)
+              background)]
+    [else (cons (first L) (circle-seq-helper (rest L)))]))
+
+
+
+
+(define (star-img n)
+  (star n "solid" "yellow"))
+
+(define (star-posns L)
+  (cond
+    [(null? L) (quote())]
+    [else
+     (cons (first L) (star-posns (rest L)))]))
      
-    
+     
+     
+
+(define (sea-of-stars-helper L)
+  (cond
+    [(null? L) (star 0 "solid" "yellow")]
+    [else
+     (place-image (star 5 "solid" "yellow")
+                   (first L)  (first L)
+              background)]))
+
+(define (sea-of-stars n L bg)
+  (cond
+    [(null? L) (star n "solid" "yellow")]
+    [else
+     (place-image (star-img 5)
+                  (star-posns L) (star-posns L)                  
+              bg)]))
+               
+(define (make-multiples-7  L)
+  (cond
+    [(null? L) 0]
+               
